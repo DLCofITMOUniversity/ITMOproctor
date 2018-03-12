@@ -124,3 +124,9 @@ npm run-script build-app
 cd ./ITMOproctor/db
 node import.js users.json
 ```
+
+Развертывание системы на Ubuntu 14.04 с помощью bash-скрипта:
+```
+chmod +x ./deploy.sh
+./deploy.sh
+```
