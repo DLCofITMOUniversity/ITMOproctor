@@ -42,7 +42,7 @@
     "gridfs-stream": "^1.1.1",
     "kurento-client": "^6.2.0",
     "moment": "^2.12.0",
-    "mongoose": "^4.4.7",
+    "mongoose": "^5.0.6",
     "morgan": "^1.7.0",
     "multer": "^1.1.0",
     "nconf": "^0.8.4",

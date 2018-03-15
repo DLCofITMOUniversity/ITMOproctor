@@ -2,7 +2,7 @@
 
 Система дистанционного надзора ITMOproctor предназначена для сопровождения процесса территориально удаленного прохождения экзаменов, подтверждения личности испытуемого и подтверждения результатов его аттестации.
 
-Система поддежрививает интеграцию на уровне API со следующими LMS:
+Система поддерживает интеграцию на уровне API со следующими LMS:
 
 * [Национальная платформа открытого образования](https://openedu.ru)
 * [Система управления обучением Университета ИТМО](http://de.ifmo.ru)
@@ -75,24 +75,24 @@ vagrant ssh
 
 Установить MongoDB:
 ```
-sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10
-echo "deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.0.list
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
+echo "deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-3.4.list
 sudo apt-get update
 sudo apt-get install -y mongodb-org
 ```
 
 Установить Node.js:
 ```
-curl --silent --location https://deb.nodesource.com/setup_0.12 | sudo bash -
-sudo apt-get install --yes nodejs
+curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+sudo apt-get install -y nodejs
 ```
 
 Установить Kurento Media Server:
 ```
-echo "deb http://ubuntu.kurento.org trusty main" | sudo tee /etc/apt/sources.list.d/kurento.list
-wget -O - http://ubuntu.kurento.org/kurento.gpg.key | sudo apt-key add -
+echo "deb http://ubuntu.kurento.org trusty kms6" | sudo tee /etc/apt/sources.list.d/kurento.list
+wget http://ubuntu.kurento.org/kurento.gpg.key -O - | sudo apt-key add -
 sudo apt-get update
-sudo apt-get install kurento-server
+sudo apt-get install kurento-media-server-6.0
 ```
 
 Клонирование репозитория ITMOproctor и инициализация:
@@ -108,6 +108,11 @@ npm install
 npm start
 ```
 
+Запуск Kurento Media Server:
+```
+sudo service kurento-media-server-6.0 start
+```
+
 Сборка приложения под все архитектуры, архивы для загрузки приложения будут размещены в public/dist:
 ```
 apt-get install tar zip unzip wget upx-ucl
@@ -118,4 +123,10 @@ npm run-script build-app
 ```
 cd ./ITMOproctor/db
 node import.js users.json
+```
+
+Развертывание системы на Ubuntu 14.04 с помощью bash-скрипта:
+```
+chmod +x ./deploy.sh
+./deploy.sh
 ```
