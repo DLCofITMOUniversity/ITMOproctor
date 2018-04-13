@@ -399,9 +399,27 @@ define({
             "subject": "Exam",
             "beginDate": "Start",
             "duration": "Duration",
+            "anyDuration": "Any duration",
+            "durationMoreThanValue": "More than %{duration} min",
             "status": "Status",
+            "anyStatus": "Any status",
+            "severalStatuses": "Several statuses",
             "durationValue": "%{duration} min",
             "play": "Exam protocol"
+        },
+        "examsCsv": {
+            "identificator": "ID",
+            "code": "Code",
+            "subject": "Exam",
+            "student": "Student",
+            "inspector": "Proctor",
+            "duration": "Duration",
+            "leftDate": "Term (start)",
+            "rightDate": "Term (end)",
+            "startDate": "Start time",
+            "stopDate": "End time",
+            "status": "Status",
+            "comment": "Comment"
         },
         "schedules": {
             "title": "Schedule",
@@ -438,7 +456,8 @@ define({
             "title": "Actions",
             "add": "Add",
             "edit": "Edit",
-            "remove": "Remove"
+            "remove": "Remove",
+            "export": "Download (csv)"
         },
         "remove": {
             "progressMsg": "Removing data...",

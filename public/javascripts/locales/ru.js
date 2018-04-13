@@ -399,9 +399,27 @@ define({
             "subject": "Экзамен",
             "beginDate": "Начало",
             "duration": "Длительность",
+            "anyDuration": "Любая длительность",
+            "durationMoreThanValue": "Более %{duration} мин.",
             "status": "Статус",
+            "anyStatus": "Любой статус",
+            "severalStatuses": "Несколько статусов",
             "durationValue": "%{duration} мин.",
             "play": "Протокол экзамена"
+        },
+        "examsCsv": {
+            "identificator": "Идентификатор",
+            "code": "Код",
+            "subject": "Экзамен",
+            "student": "Слушатель",
+            "inspector": "Проктор",
+            "duration": "Длительность",
+            "leftDate": "Срок сдачи (начало)",
+            "rightDate": "Срок сдачи (окончание)",
+            "startDate": "Время начала",
+            "stopDate": "Время окончания",
+            "status": "Статус",
+            "comment": "Комментарий"
         },
         "schedules": {
             "title": "Расписание",
@@ -438,7 +456,8 @@ define({
             "title": "Действия",
             "add": "Добавить",
             "edit": "Изменить",
-            "remove": "Удалить"
+            "remove": "Удалить",
+            "export": "Скачать (csv)"
         },
         "remove": {
             "progressMsg": "Удаление данных...",

@@ -119,7 +119,7 @@ define([
                             var fb = b.lastname + ' ' + b.firstname + ' ' + b.middlename;
                             return fa.localeCompare(fb);
                         },
-                        formatter: function(value, row, index) {
+                        formatter: function(value, row) {
                             return self.formatInspector(value, row);
                         }
                     }, {
@@ -127,7 +127,7 @@ define([
                         title: i18n.t('admin.exams.subject'),
                         width: 200,
                         sortable: true,
-                        formatter: function(value, row, index) {
+                        formatter: function(value, row) {
                             return self.formatSubject(value, row);
                         }
                     }, {
@@ -147,7 +147,9 @@ define([
                         title: i18n.t('admin.exams.status'),
                         width: 100,
                         sortable: true,
-                        formatter: self.formatStatus
+                        formatter: function(value, row) {
+                            return self.colorStatus(self.getStatus(value, row));
+                        }
                     }, {
                         field: 'action',
                         title: '&nbsp;&nbsp;&nbsp;&nbsp;',
@@ -170,6 +172,87 @@ define([
                     text: self.$TextSearch.textbox('getValue').trim()
                 }
             });
+            this.$Duration = this.$("#exams-duration");
+            this.$Duration.combobox({
+                valueField: 'label',
+                textField: 'value',
+                panelHeight: 'auto',
+                editable: false,
+                // todo multiple?
+                data: [{
+                    label: 'any',
+                    value: i18n.t('admin.exams.anyDuration'),
+                    selected: true
+                }, {
+                    label: '1-30',
+                    value: i18n.t('admin.exams.durationValue', {duration: '1-30'})
+                }, {
+                    label: '31-45',
+                    value: i18n.t('admin.exams.durationValue', {duration: '31-45'})
+                }, {
+                    label: '46-60',
+                    value: i18n.t('admin.exams.durationValue', {duration: '46-60'})
+                }, {
+                    label: '61',
+                    value: i18n.t('admin.exams.durationMoreThanValue', {duration: '60'})
+                }],
+                onSelect: function(date) {
+                    self.doSearch();
+                }
+            });
+            this.$Status = this.$("#exams-status");
+            this.$Status.combobox({
+                valueField: 'label',
+                textField: 'value',
+                panelHeight: 'auto',
+                editable: false,
+                multiple: true,
+                data: [
+                    { label: 'any', value: i18n.t('admin.exams.anyStatus'), selected: true},
+                    { label: 0 },
+                    { label: 1 },
+                    { label: 2 },
+                    { label: 3 },
+                    { label: 7 },
+                    { label: 4 },
+                    { label: 5 },
+                    { label: 6 }
+                ],
+                formatter: function(row) {
+                    return self.colorStatus(self.getStatus(row.label, row));
+                },
+                onSelect: function(newStatus) {
+                    if (newStatus.label == 'any') {
+                        self.$Status.combobox('setValues', ['any']);
+                        self.$Status.textbox('setText', self.getStatus('any').statusName);
+                    }
+                    else {
+                        var values = self.$Status.combobox('getValues');
+                        var index = values.indexOf('any');
+                        if (index >= 0) {
+                            values.splice(index, 1);
+                            self.$Status.combobox('setValues', values);
+                        }
+                        if (values.length == 1)
+                            self.$Status.textbox('setText', self.getStatus(values[0]).statusName);
+                        else
+                            self.$Status.textbox('setText', i18n.t('admin.exams.severalStatuses'));
+                    }
+                    self.doSearch();
+                },
+                onUnselect: function(newStatus) {
+                    var values = self.$Status.combobox('getValues');
+                    if (newStatus.label == 'any' || values.length === 0) {
+                        self.$Status.combobox('setValues', ['any']);
+                        self.$Status.textbox('setText', self.getStatus('any').statusName);
+                    }
+                    else if (newStatus.label != 'any' && values.length == 1)
+                        self.$Status.textbox('setText', self.getStatus(values[0]).statusName);
+                    else
+                        self.$Status.textbox('setText', i18n.t('admin.exams.severalStatuses'));
+                    self.doSearch();
+                }
+            });
         },
         getDates: function() {
             var fromVal = this.$FromDate.datebox('getValue');
@@ -181,45 +264,85 @@ define([
                 to: toDate
             };
         },
-        formatStatus: function(val, row) {
+        getStatus: function(val, row) {
             var status = 0;
-            var now = app.now();
-            if (row.rightDate) {
-                var rightDate = moment(row.rightDate);
-                if (rightDate <= now) status = 6;
+            if (val === undefined) {
+                var now = app.now();
+                if (row.rightDate) {
+                    var rightDate = moment(row.rightDate);
+                    if (rightDate <= now) status = 6;
+                }
+                if (row.beginDate && row.endDate) {
+                    var beginDate = moment(row.beginDate);
+                    var endDate = moment(row.endDate);
+                    if (beginDate > now) status = 1;
+                    if (endDate <= now) status = 6;
+                    if (beginDate <= now && endDate > now) status = 2;
+                    if (row.startDate) status = 3;
+                    if (row.inspectorConnected === true) status = 7;
+                    if (row.resolution === true) status = 4;
+                    if (row.resolution === false) status = 5;
+                }
             }
-            if (row.beginDate && row.endDate) {
-                var beginDate = moment(row.beginDate);
-                var endDate = moment(row.endDate);
-                if (beginDate > now) status = 1;
-                if (endDate <= now) status = 6;
-                if (beginDate <= now && endDate > now) status = 2;
-                if (row.startDate) status = 3;
-                if (row.inspectorConnected === true) status = 7;
-                if (row.resolution === true) status = 4;
-                if (row.resolution === false) status = 5;
+            else {
+                status = isNaN(val) ? val : Number(val);
             }
-            row.status = status;
             switch (status) {
+                case 'any':
+                    return {
+                        statusName: i18n.t('admin.exams.anyStatus'),
+                        color: 'black'
+                    }
                 case 0:
-                    return '<span style="color:olive;">' + i18n.t('exam.status.0') + '</span>';
+                    return {
+                        statusName: i18n.t('exam.status.0'),
+                        color: 'olive'
+                    }
                 case 1:
-                    return '<span style="color:teal;">' + i18n.t('exam.status.1') + '</span>';
+                    return {
+                        statusName: i18n.t('exam.status.1'),
+                        color: 'teal'
+                    };
                 case 2:
-                    return '<span style="color:orange;">' + i18n.t('exam.status.2') + '</span>';
+                    return {
+                        statusName: i18n.t('exam.status.2'),
+                        color: 'orange'
+                    };
                 case 3:
-                    return '<span style="color:darkred;">' + i18n.t('exam.status.3') + '</span>';
+                    return {
+                        statusName: i18n.t('exam.status.3'),
+                        color: 'darkred'
+                    };
                 case 4:
-                    return '<span style="color:green;">' + i18n.t('exam.status.4') + '</span>';
+                    return {
+                        statusName: i18n.t('exam.status.4'),
+                        color: 'green'
+                    };
                 case 5:
-                    return '<span style="color:purple;">' + i18n.t('exam.status.5') + '</span>';
+                    return {
+                        statusName: i18n.t('exam.status.5'),
+                        color: 'purple'
+                    };
                 case 6:
-                    return '<span style="color:gray;">' + i18n.t('exam.status.6') + '</span>';
+                    return {
+                        statusName: i18n.t('exam.status.6'),
+                        color: 'gray'
+                    };
                 case 7:
-                    return '<span style="color:red;">' + i18n.t('exam.status.7') + '</span>';
+                    return {
+                        statusName: i18n.t('exam.status.7'),
+                        color: 'red'
+                    };
                 default:
-                    return null;
+                    return {
+                        statusName: status,
+                        color: 'black'
+                    };
             }
+        },
+        colorStatus: function(status) {
+            // status -> object from getStatus()
+            return '<span style="color:' + status.color + ';">' + status.statusName + '</span>';
         },
         formatDuration: function(val, row) {
             if (!val) return;
@@ -265,6 +388,10 @@ define([
                 row: row
             };
             return tpl(data);
+        },
+        formatUser: function(val, row) {
+            if (!val) return;
+            return (val.lastname || i18n.t('user.unknown')) + ' ' + val.firstname + ' ' + val.middlename + ' (' + val.username + ')';
         },
         doSearch: function() {
             var self = this;
@@ -349,6 +476,129 @@ define([
                 function(r) {
                     if (r) self.removeRows(selected);
                 });
+        },
+        doExport: function() {
+            var self = this;
+            var dates = this.getDates();
+
+            var fields = [{
+                label: i18n.t('admin.examsCsv.identificator'),
+                value: 'examId'
+            }, {
+                label: i18n.t('admin.examsCsv.code'),
+                value: 'examCode'
+            }, {
+                label: i18n.t('admin.examsCsv.subject'),
+                value: 'subject'
+            }, {
+                label: i18n.t('admin.examsCsv.student'),
+                value: 'student',
+                formatter: self.formatUser
+            }, {
+                label: i18n.t('admin.examsCsv.inspector'),
+                value: 'inspector',
+                formatter: self.formatUser
+            }, {
+                label: i18n.t('admin.examsCsv.duration'),
+                value: 'duration',
+                formatter: self.formatDuration
+            }, {
+                label: i18n.t('admin.examsCsv.leftDate'),
+                value: 'leftDate',
+                formatter: self.formatDate
+            }, {
+                label: i18n.t('admin.examsCsv.rightDate'),
+                value: 'rightDate',
+                formatter: self.formatDate
+            }, {
+                label: i18n.t('admin.examsCsv.startDate'),
+                value: 'startDate',
+                formatter: self.formatDate
+            }, {
+                label: i18n.t('admin.examsCsv.stopDate'),
+                value: 'stopDate',
+                formatter: self.formatDate
+            }, {
+                label: i18n.t('admin.examsCsv.status'),
+                value: 'status',
+                formatter: function(val, row) {
+                    return self.getStatus(val, row).statusName;
+                }
+            }, {
+                label: i18n.t('admin.examsCsv.comment'),
+                value: 'comment'
+            }];
+
+            var selected = self.$Grid.datagrid('getSelections');
+            if (selected.length > 0) {
+                var csv = self.doCsv(fields, selected);
+                self.downloadCsv(csv);
+            }
+            else {
+                $.ajax({
+                    url: 'admin/exams',
+                    data: {
+                        from: dates.from,
+                        to: dates.to,
+                        text: self.$TextSearch.textbox('getValue').trim()
+                    },
+                    success: function(data) {
+                        if (data.total === 0) return;
+                        var csv = self.doCsv(fields, data.rows);
+                        self.downloadCsv(csv);
+                    }
+                });
+            }
+        },
+        doCsv: function(fields, rows) {
+            var replacer = function(key, value) { return value || '-' };
+
+            var csv = rows.map(function(row) {
+                return fields.map(function(field) {
+                    var fieldValue = row[field.value];
+
+                    if (typeof field.formatter == 'function') {
+                        return JSON.stringify(field.formatter(fieldValue, row), replacer);
+                    }
+                    return JSON.stringify(fieldValue, replacer);
+                }).join(',');
+            })
+
+            // Add headers
+            csv.unshift(fields.map(function(row) {
+                return JSON.stringify(row.label, replacer);
+            }).join(','));
+
+            return csv.join('\r\n');
+        },
+        downloadCsv: function(csv) {
+            var link = document.createElement('a');
+            var blob = new Blob([csv], { type: 'text/csv' });
+
+            var url;
+            if (window.URL && window.URL.createObjectURL) {
+                url = window.URL.createObjectURL(blob);
+            }
+            else if (window.webkitURL) {
+                url = window.webkitURL.createObjectURL(blob);
+            }
+
+            var dateTime = moment().format('YYYY-MM-DD_HH-mm-ss');
+            $(link).attr({
+                style: 'display: none',
+                href: url,
+                download: 'ITMOproctor-report_' + dateTime + '.csv'
+            });
+
+            $('body').append(link);
+            link.click();
+
+            if (window.URL && window.URL.createObjectURL) {
+                window.URL.revokeObjectURL(url);
+            }
+            else if (window.webkitURL) {
+                window.webkitURL.revokeObjectURL(url);
+            }
         }
     });
     return View;

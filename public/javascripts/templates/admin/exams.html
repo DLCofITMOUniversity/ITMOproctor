@@ -6,11 +6,14 @@
     <input name="date-to" class="easyui-datebox date-to" style="width:110px;" data-options="prompt:'<%- i18n.t('admin.exams.toDatePrompt') %>'">
     <input name="text-search" class="easyui-searchbox text-search" style="width:300px;" data-options="prompt: '<%- i18n.t('admin.exams.searchTextPrompt') %>'">
     <span class="easyui-menubutton" data-options="menu:'#exams-menu'"><%- i18n.t('admin.actions.title') %></span>
+    <!-- <input id="exams-duration" style="width:170px;">
+    <input id="exams-status" style="width:160px;"> -->
 </div>
 <div id="exams-menu" style="width:150px;">
     <div name="add" data-options="iconCls:'fa fa-plus'"><%- i18n.t('admin.actions.add') %></div>
     <div name="edit" data-options="iconCls:'fa fa-pencil'"><%- i18n.t('admin.actions.edit') %></div>
     <div name="remove" data-options="iconCls:'fa fa-trash-o'"><%- i18n.t('admin.actions.remove') %></div>
+    <div name="export" data-options="iconCls:'fa fa-save'"><%- i18n.t('admin.actions.export') %></div>
 </div>
 </script>
 <script type="text/template" id="subject-item-tpl">
