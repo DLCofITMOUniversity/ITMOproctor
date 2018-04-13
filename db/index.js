@@ -139,7 +139,7 @@ var db = {
                         var endIndex = (rows*page + rows) > data.length || (rows*page + rows) === 0 ? data.length : (rows*page + rows);
                         // text search
                         if (text && text != "") {
-                            users  = db.textSearch(data, text, props);
+                            users = db.utils.textSearch(data, text, props);
                             endIndex = endIndex > users.length ? users.length : endIndex;
                             callback(err, users.slice(rows*page, endIndex), users.length);
                         }
@@ -429,6 +429,8 @@ var db = {
             var fromDate = args.data.from ? moment(args.data.from) : null;
             var toDate = args.data.to ? moment(args.data.to) : null;
             var text = args.data.text ? args.data.text : null;
+            var duration = args.data.duration ? args.data.duration.split(',') : null;
+            var status = args.data.status ? args.data.status.split(',') : null;
             var query = {};
             // Dates
             if (fromDate && toDate) {
@@ -485,9 +487,12 @@ var db = {
                     //callback(err, data, count);
                     var exams = data;
                     var endIndex = (rows*page + rows) > data.length || (rows*page + rows) === 0 ? data.length : (rows*page + rows);
+                    // Filter data
+                    exams = db.utils.filterByDuration(exams, duration);
+                    exams = db.utils.filterByStatus(exams, status);
                     // text search
                     if (text && text != "") {
-                        exams  = db.textSearch(data, text, props);
+                        exams = db.utils.textSearch(exams, text, props);
                         endIndex = endIndex > exams.length ? exams.length : endIndex;
                         callback(err, exams.slice(rows*page, endIndex), exams.length);
                     }
@@ -895,7 +900,7 @@ var db = {
                     var exams = data;
                     // text search
                     if (text && text != "") {
-                        exams  = db.textSearch(data, text, props);
+                        exams = db.utils.textSearch(data, text, props);
                     }
                     
                     var totalExams = exams.length;
@@ -1001,7 +1006,7 @@ var db = {
                         var endIndex = (rows*page + rows) > data.length || (rows*page + rows) === 0 ? data.length : (rows*page + rows);
                         // text search
                         if (text && text != "") {
-                            schedules  = db.textSearch(data, text, props);
+                            schedules = db.utils.textSearch(data, text, props);
                             endIndex = endIndex > schedules.length ? schedules.length : endIndex;
                             callback(err, schedules.slice(rows*page, endIndex), schedules.length);
                         }
@@ -1223,35 +1228,74 @@ var db = {
             }
         }
     },
-    textSearch: function(data, text, props) {
-        // Text search based on props of the object
-        if (!data || !(text || "").length) return data;
-        var objectToString = function(obj,parent) {
-            var result = "";
-            for (var prop in obj) {
-                if (props.indexOf(prop) >= 0 || props.indexOf(parent) >= 0 ) {
-                    if (obj[prop] instanceof Object) {
-                        result += objectToString(obj[prop],prop);
+    utils: {
+        textSearch: function(data, text, props) {
+            // Text search based on props of the object
+            if (!data || !(text || "").length) return data;
+            var objectToString = function(obj,parent) {
+                var result = "";
+                for (var prop in obj) {
+                    if (props.indexOf(prop) >= 0 || props.indexOf(parent) >= 0 ) {
+                        if (obj[prop] instanceof Object) {
+                            result += objectToString(obj[prop],prop);
+                        }
+                        if (typeof obj[prop] === 'string') result += obj[prop] + " ";        
                     }
-                    if (typeof obj[prop] === 'string') result += obj[prop] + " ";        
                 }
-            }
-            return result;
-        };
-        var phrases = text.toLowerCase().split(' ');
-        var rows = [];
-        for (var i = 0, li = data.length; i < li; i++) {
-            var str = objectToString(JSON.parse(JSON.stringify(data[i]))).toLowerCase();
-            var cond = true;
-            for (var j = 0, lj = phrases.length; j < lj; j++) {
-                if (str.search(phrases[j]) === -1) {
-                    cond = false;
-                    break;
+                return result;
+            };
+            var phrases = text.toLowerCase().split(' ');
+            var rows = [];
+            for (var i = 0, li = data.length; i < li; i++) {
+                var str = objectToString(JSON.parse(JSON.stringify(data[i]))).toLowerCase();
+                var cond = true;
+                for (var j = 0, lj = phrases.length; j < lj; j++) {
+                    if (str.search(phrases[j]) === -1) {
+                        cond = false;
+                        break;
+                    }
                 }
+                if (cond) rows.push(data[i]);
             }
-            if (cond) rows.push(data[i]);
+            return rows;
+        },
+        filterByDuration: function(data, duration) {
+            if (!data || !duration) return data;
+            return data.filter(function(row) {
+                return duration.some(function(value) {
+                    value = value.split('-');
+                    var durationMin = value[0];
+                    var durationMax = value[1];
+                    if (!durationMin && !durationMax) return false;
+                    if (durationMin && !durationMax) return row.duration >= durationMin;
+                    if (!durationMin && durationMax) return row.duration <= durationMax;
+                    return row.duration >= durationMin && row.duration <= durationMax;
+                });
+            });
+        },
+        filterByStatus: function(data, statusArray) {
+            if (!data || !statusArray) return data;
+            var now = moment();
+            return data.filter(function(row) {
+                var status = 0;
+                if (row.rightDate) {
+                    var rightDate = moment(row.rightDate);
+                    if (rightDate <= now) status = 6;
+                }
+                if (row.beginDate && row.endDate) {
+                    var beginDate = moment(row.beginDate);
+                    var endDate = moment(row.endDate);
+                    if (beginDate > now) status = 1;
+                    if (endDate <= now) status = 6;
+                    if (beginDate <= now && endDate > now) status = 2;
+                    if (row.startDate) status = 3;
+                    if (row.inspectorConnected === true) status = 7;
+                    if (row.resolution === true) status = 4;
+                    if (row.resolution === false) status = 5;
+                }
+                return statusArray.indexOf(status.toString()) !== -1;
+            });
         }
-        return rows;
     }
 };
 conn.on('error', function(err) {

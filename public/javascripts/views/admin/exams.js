@@ -148,7 +148,7 @@ define([
                         width: 100,
                         sortable: true,
                         formatter: function(value, row) {
-                            return self.colorStatus(self.getStatus(value, row));
+                            return self.colorStatus(self.processStatus(value, row));
                         }
                     }, {
                         field: 'action',
@@ -178,7 +178,7 @@ define([
                 textField: 'value',
                 panelHeight: 'auto',
                 editable: false,
-                // todo multiple?
+                multiple: true,
                 data: [{
                     label: 'any',
                     value: i18n.t('admin.exams.anyDuration'),
@@ -196,7 +196,27 @@ define([
                     label: '61',
                     value: i18n.t('admin.exams.durationMoreThanValue', {duration: '60'})
                 }],
-                onSelect: function(date) {
+                onSelect: function(newDuration) {
+                    if (newDuration.label == 'any')
+                        self.$Duration.combobox('setValues', ['any']);
+                    else {
+                        var values = self.$Duration.combobox('getValues');
+                        var index = values.indexOf('any');
+                        if (index >= 0) {
+                            values.splice(index, 1);
+                            self.$Duration.combobox('setValues', values);
+                        }
+                        if (values.length > 1)
+                            self.$Duration.textbox('setText', i18n.t('admin.exams.severalDurations'));
+                    }
+                    self.doSearch();
+                },
+                onUnselect: function(newDuration) {
+                    var values = self.$Duration.combobox('getValues');
+                    if (newDuration.label == 'any' || values.length === 0)
+                        self.$Duration.combobox('setValues', ['any']);
+                    else if (values.length > 1)
+                        self.$Duration.textbox('setText', i18n.t('admin.exams.severalDurations'));
                     self.doSearch();
                 }
             });
@@ -219,13 +239,11 @@ define([
                     { label: 6 }
                 ],
                 formatter: function(row) {
-                    return self.colorStatus(self.getStatus(row.label, row));
+                    return self.colorStatus(self.processStatus(row.label, row));
                 },
                 onSelect: function(newStatus) {
-                    if (newStatus.label == 'any') {
+                    if (newStatus.label == 'any')
                         self.$Status.combobox('setValues', ['any']);
-                        self.$Status.textbox('setText', self.getStatus('any').statusName);
-                    }
                     else {
                         var values = self.$Status.combobox('getValues');
                         var index = values.indexOf('any');
@@ -234,7 +252,7 @@ define([
                             self.$Status.combobox('setValues', values);
                         }
                         if (values.length == 1)
-                            self.$Status.textbox('setText', self.getStatus(values[0]).statusName);
+                            self.$Status.textbox('setText', self.processStatus(values[0]).statusName);
                         else
                             self.$Status.textbox('setText', i18n.t('admin.exams.severalStatuses'));
                     }
@@ -242,12 +260,10 @@ define([
                 },
                 onUnselect: function(newStatus) {
                     var values = self.$Status.combobox('getValues');
-                    if (newStatus.label == 'any' || values.length === 0) {
+                    if (newStatus.label == 'any' || values.length === 0)
                         self.$Status.combobox('setValues', ['any']);
-                        self.$Status.textbox('setText', self.getStatus('any').statusName);
-                    }
                     else if (newStatus.label != 'any' && values.length == 1)
-                        self.$Status.textbox('setText', self.getStatus(values[0]).statusName);
+                        self.$Status.textbox('setText', self.processStatus(values[0]).statusName);
                     else
                         self.$Status.textbox('setText', i18n.t('admin.exams.severalStatuses'));
                     self.doSearch();
@@ -264,7 +280,17 @@ define([
                 to: toDate
             };
         },
-        getStatus: function(val, row) {
+        getDuration: function() {
+            var duration = this.$Duration.combobox('getValues');
+            duration = duration[0] != 'any' ? duration.join(',') : null;
+            return duration;
+        },
+        getStatus: function() {
+            var status = this.$Status.combobox('getValues');
+            status = status[0] != 'any' ? status.join(',') : null;
+            return status;
+        },
+        processStatus: function(val, row) {
             var status = 0;
             if (val === undefined) {
                 var now = app.now();
@@ -341,7 +367,7 @@ define([
             }
         },
         colorStatus: function(status) {
-            // status -> object from getStatus()
+            // status -> object from processStatus()
             return '<span style="color:' + status.color + ';">' + status.statusName + '</span>';
         },
         formatDuration: function(val, row) {
@@ -399,7 +425,9 @@ define([
             this.$Grid.datagrid('load', {
                 from: dates.from,
                 to: dates.to,
-                text: self.$TextSearch.textbox('getValue').trim()
+                text: self.$TextSearch.textbox('getValue').trim(),
+                duration: self.getDuration(),
+                status: self.getStatus()
             });
         },
         doExamInfo: function(e) {
@@ -522,7 +550,7 @@ define([
                 label: i18n.t('admin.examsCsv.status'),
                 value: 'status',
                 formatter: function(val, row) {
-                    return self.getStatus(val, row).statusName;
+                    return self.processStatus(val, row).statusName;
                 }
             }, {
                 label: i18n.t('admin.examsCsv.comment'),
@@ -540,7 +568,9 @@ define([
                     data: {
                         from: dates.from,
                         to: dates.to,
-                        text: self.$TextSearch.textbox('getValue').trim()
+                        text: self.$TextSearch.textbox('getValue').trim(),
+                        duration: self.getDuration(),
+                        status: self.getStatus()
                     },
                     success: function(data) {
                         if (data.total === 0) return;

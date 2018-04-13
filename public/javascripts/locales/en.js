@@ -400,6 +400,7 @@ define({
             "beginDate": "Start",
             "duration": "Duration",
             "anyDuration": "Any duration",
+            "severalDurations": "Several durations",
             "durationMoreThanValue": "More than %{duration} min",
             "status": "Status",
             "anyStatus": "Any status",

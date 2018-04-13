@@ -400,6 +400,7 @@ define({
             "beginDate": "Начало",
             "duration": "Длительность",
             "anyDuration": "Любая длительность",
+            "severalDurations": "Несколько длительностей",
             "durationMoreThanValue": "Более %{duration} мин.",
             "status": "Статус",
             "anyStatus": "Любой статус",
