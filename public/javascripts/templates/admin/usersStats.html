@@ -1,8 +1,17 @@
 <script type="text/template" id="main-tpl">
 <div style="padding:5px">
-<p><%- i18n.t('admin.usersStats.totalUsers') %>: <span id="total-users"></span></p>
-<p><%- i18n.t('admin.usersStats.totalStudents') %>: <span id="total-students"></span></p>
-<p><%- i18n.t('admin.usersStats.totalInspectors') %>: <span id="total-inspectors"></span></p>
+<p>
+    <%- i18n.t('admin.usersStats.totalUsers') %>: <span id="total-users">0</span>
+    (<span id="total-active-users">0</span> <%- i18n.t('admin.usersStats.active') %>)
+</p>
+<p>
+    <%- i18n.t('admin.usersStats.totalStudents') %>: <span id="total-students">0</span>
+    (<span id="total-active-students">0</span> <%- i18n.t('admin.usersStats.active') %>)
+</p>
+<p>
+    <%- i18n.t('admin.usersStats.totalInspectors') %>: <span id="total-inspectors">0</span>
+    (<span id="total-active-inspectors">0</span> <%- i18n.t('admin.usersStats.active') %>)
+</p>
 </div>
 <div id="users-chart"></div>
 </script>

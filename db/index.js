@@ -841,17 +841,23 @@ var db = {
                     var totalUsers = users.length;
                     var totalStudents = 0;
                     var totalInspectors = 0;
+                    var totalActiveUsers = 0;
+                    var totalActiveStudents = 0;
+                    var totalActiveInspectors = 0;
                     users.forEach(function(element, index, array) {
                         switch (element.role) {
                             case 1:
                                 totalStudents++;
+                                if (element.active) totalActiveStudents++;
                                 break;
                             case 2:
                                 totalInspectors++;
+                                if (element.active) totalActiveInspectors++;
                                 break;
                         }
+                        if (element.active) totalActiveUsers++;
                     });
-                    callback(err, totalUsers, totalStudents, totalInspectors);
+                    callback(err, totalUsers, totalStudents, totalInspectors, totalActiveUsers, totalActiveStudents, totalActiveInspectors);
                 });
             });
         },

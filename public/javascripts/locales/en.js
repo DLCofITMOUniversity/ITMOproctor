@@ -439,7 +439,8 @@ define({
             "tabTitle": "Users stats",
             "totalUsers": "Total users",
             "totalStudents": "Students",
-            "totalInspectors": "Proctors"
+            "totalInspectors": "Proctors",
+            "active": "active"
         },
         "examsStats": {
             "title": "Exams",

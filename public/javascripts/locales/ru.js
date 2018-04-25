@@ -439,7 +439,8 @@ define({
             "tabTitle": "Статистика по пользователям",
             "totalUsers": "Всего пользователей",
             "totalStudents": "Слушателей",
-            "totalInspectors": "Прокторов"
+            "totalInspectors": "Прокторов",
+            "active": "активных"
         },
         "examsStats": {
             "title": "Экзамены",

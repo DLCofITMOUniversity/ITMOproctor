@@ -66,19 +66,25 @@ router.get('/usersStats', function(req, res) {
     var args = {
         data: req.query
     };
-    db.stats.usersStats(args, function(err, totalUsers, totalStudents, totalInspectors) {
+    db.stats.usersStats(args, function(err, totalUsers, totalStudents, totalInspectors, totalActiveUsers, totalActiveStudents, totalActiveInspectors) {
         if (!err) {
             res.json({
                 "totalUsers": totalUsers,
                 "totalStudents": totalStudents,
-                "totalInspectors": totalInspectors
+                "totalInspectors": totalInspectors,
+                "totalActiveUsers": totalActiveUsers,
+                "totalActiveStudents": totalActiveStudents,
+                "totalActiveInspectors": totalActiveInspectors
             });
         }
         else {
             res.json({
                 "totalUsers": 0,
                 "totalStudents": 0,
-                "totalInspectors": 0
+                "totalInspectors": 0,
+                "totalActiveUsers": 0,
+                "totalActiveStudents": 0,
+                "totalActiveInspectors": 0
             });
         }
     });

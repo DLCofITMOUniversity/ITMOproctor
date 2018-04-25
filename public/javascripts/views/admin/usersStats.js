@@ -31,6 +31,9 @@ define([
             this.$TotalUsers = this.$("#total-users");
             this.$TotalStudents = this.$("#total-students");
             this.$TotalInspectors = this.$("#total-inspectors");
+            this.$TotalActiveUsers = this.$("#total-active-users");
+            this.$TotalActiveStudents = this.$("#total-active-students");
+            this.$TotalActiveInspectors = this.$("#total-active-inspectors");
             
             $.ajax({
                 url: "admin/usersStats",
@@ -38,6 +41,9 @@ define([
                     self.$TotalUsers.html(data.totalUsers);
                     self.$TotalStudents.html(data.totalStudents);
                     self.$TotalInspectors.html(data.totalInspectors);
+                    self.$TotalActiveUsers.html(data.totalActiveUsers);
+                    self.$TotalActiveStudents.html(data.totalActiveStudents);
+                    self.$TotalActiveInspectors.html(data.totalActiveInspectors);
                     self.openChart(data);
                 }
             });
@@ -46,17 +52,15 @@ define([
         },
         openChart: function(data) {
             var chartData = [
-                  {
-                    x: [i18n.t('admin.usersStats.totalUsers')],
-                    y: [data.totalUsers],
+                {
+                    x: [i18n.t('admin.usersStats.totalUsers'), i18n.t('admin.usersStats.totalStudents'), i18n.t('admin.usersStats.totalInspectors')],
+                    y: [data.totalUsers, data.totalStudents, data.totalInspectors],
+                    marker: {color: ['rgba(31,119,180,0.7)', 'rgba(255,127,14,0.7)', 'rgba(44,160,44,0.7)']},
                     type: 'bar'
                 }, {
-                    x: [i18n.t('admin.usersStats.totalStudents')],
-                    y: [data.totalStudents],
-                    type: 'bar'
-                }, {
-                    x: [i18n.t('admin.usersStats.totalInspectors')],
-                    y: [data.totalInspectors],
+                    x: [i18n.t('admin.usersStats.totalUsers'), i18n.t('admin.usersStats.totalStudents'), i18n.t('admin.usersStats.totalInspectors')],
+                    y: [data.totalActiveUsers, data.totalActiveStudents, data.totalActiveInspectors],
+                    marker: {color: ['rgba(31,119,180,1)', 'rgba(255,127,14,1)', 'rgba(44,160,44,1)']},
                     type: 'bar'
                 }
             ];
@@ -65,6 +69,7 @@ define([
                 width: 400,
                 height: 400,
                 showlegend: false,
+                barmode: 'overlay',
                 xaxis: {
                     ticklen: 5,
                     tickcolor: 'rgba(0,0,0,0)'
