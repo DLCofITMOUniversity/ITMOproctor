@@ -28,7 +28,8 @@ define([
                     userId: app.profile.get('_id'),
                     capture: false,
                     webcamProctor: this.options.webcamProctor,
-                    automuteFlag: this.options.automuteFlag,
+                    audioAutomuteFlag: this.options.audioAutomuteFlag,
+                    videoAutomuteFlag: this.options.videoAutomuteFlag,
                     examSelected: true,
                     windowFocus: true
                 })

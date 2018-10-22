@@ -77,7 +77,8 @@ define([
             var self = this;
             this.options = options || {};
             this.protectionCode = null;
-            this.automuteFlag = true;
+            this.audioAutomuteFlag = true;
+            this.videoAutomuteFlag = false;
             this.examsCount = 0;
             this.exams = {};
             this.exam = {};
@@ -230,8 +231,8 @@ define([
                             if (self.examCount === 0 || !self.exam) break;
                             self.closeExam(self.exam.get('_id'));
                             break;
-                        case "automute":
-                            self.toggleAutomute(item);
+                        case "audioAutomute":
+                            self.toggleAudioAutomute(item);
                             break;
                         case "profile":
                             self.view.profile.doOpen();
@@ -315,13 +316,13 @@ define([
             this.updateBlockPositions();
             if (this.examsCount > 0) this.selectExam(Object.keys(this.exams)[this.examsCount-1]);
         },
-        toggleAutomute: function(item) {
-            this.automuteFlag = !this.automuteFlag;
+        toggleAudioAutomute: function(item) {
+            this.audioAutomuteFlag = !this.audioAutomuteFlag;
             for (var examId in this.exams) {
-                this.exams[examId].videoblock.view.screenwebcam.automuteFlag = this.automuteFlag;
+                this.exams[examId].videoblock.view.screenwebcam.audioAutomuteFlag = this.audioAutomuteFlag;
                 this.exams[examId].videoblock.view.screenwebcam.updateMuteState();
             }
-            if (this.automuteFlag) {
+            if (this.audioAutomuteFlag) {
                 this.$Menu.menu('setIcon', {
                     target: item.target,
                     iconCls: 'fa fa-dot-circle-o'
@@ -400,7 +401,8 @@ define([
             });
             this.exams[examId].videoblock = new VideoblockView({
                 examId: examId,
-                automuteFlag: this.automuteFlag,
+                audioAutomuteFlag: this.audioAutomuteFlag,
+                videoAutomuteFlag: this.videoAutomuteFlag,
                 webcamProctor: this.$PanelWebcamVideo
             });
             

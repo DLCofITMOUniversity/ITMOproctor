@@ -12,7 +12,8 @@ define([
         initialize: function(options) {
             this.options = options || {};
             this.webcamProctor = this.options.webcamProctor;
-            this.automuteFlag = this.options.automuteFlag;
+            this.audioAutomuteFlag = this.options.audioAutomuteFlag;
+            this.videoAutomuteFlag = this.options.videoAutomuteFlag;
             this.examSelected = this.options.examSelected;
             this.windowFocus = this.options.windowFocus;
             this.buttonAudioState = true;
@@ -108,7 +109,6 @@ define([
                 }, {
                     iconCls: self.buttonVideoState ? 'fa fa-eye' : 'fa fa-eye-slash',
                     handler: function() {
-                        if (self.options.examId == '5bcdabae6d251f0a28fc552f') console.log('test eye');
                         self.buttonVideoState = !self.buttonVideoState;
                         if (self.buttonVideoState) {
                             $(this).attr('class', 'fa fa-eye');
@@ -184,13 +184,13 @@ define([
         updateMuteState: function() {
             var aState = this.getAudioState();
             var newAState = false;
-            if (this.automuteFlag && this.examSelected && this.windowFocus && this.buttonAudioState) newAState = true;
-            else if (!this.automuteFlag && this.buttonAudioState) newAState = true;
+            if (this.audioAutomuteFlag && this.examSelected && this.windowFocus && this.buttonAudioState) newAState = true;
+            else if (!this.audioAutomuteFlag && this.buttonAudioState) newAState = true;
 
             var vState = this.getVideoState();
             var newVState = false;
-            if (this.automuteFlag && this.examSelected && this.windowFocus && this.buttonVideoState) newVState = true;
-            else if (!this.automuteFlag && this.buttonVideoState) newVState = true;
+            if (this.videoAutomuteFlag && this.examSelected && this.windowFocus && this.buttonVideoState) newVState = true;
+            else if (!this.videoAutomuteFlag && this.buttonVideoState) newVState = true;
 
             if (aState != newAState)
                 this.webcamWebcall.toggleAudio(newAState);
