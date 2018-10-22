@@ -109,7 +109,8 @@ define([
                 }
             };
             this.focusEventHandler = function(event) {
-                self.view.webcam.mute(false);
+                var isMuted = self.$('.fa-eye-slash').length === 1;
+                self.view.webcam.mute(isMuted);
             };
             this.blurEventHandler = function(event) {
                 self.view.webcam.mute(true);

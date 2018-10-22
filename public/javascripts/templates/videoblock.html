@@ -1,0 +1,16 @@
+<script type="text/template" id="main-tpl">
+<div class="easyui-layout" data-options="fit:true">
+    <div class="easyui-panel panel-screenwebcam" title="<%- exam.student.lastname %> <%- exam.student.firstname %> <%- exam.student.middlename %>" 
+                data-options="region:'north',collapsible:false,fit:true,iconCls:'fa fa-video-camera'" style="margin-top:1px"></div>
+    <div data-options="region:'south',border:false" style="height:38px;margin-top:1px">
+        <div class="easyui-panel" style="padding:5px;overflow:hidden;" data-options="fit:true">
+            <span class="easyui-tooltip text-item duration-warning" title="<%- i18n.t('exam.timeExpires') %>" style="float:right;display:none"><i class="fa fa-exclamation-triangle"></i></span>
+            <span class="easyui-tooltip text-item new-notification" title="<%- i18n.t('exam.newNotification') %>" style="float:right;display:none;color:orange"><i class="fa fa-bell"></i></span>
+            <span class="easyui-tooltip text-item" title="<%- exam.subject %> (<%- i18n.t('exam.durationMinutes', {num: exam.duration}) %>)" style="float:left;overflow:hidden;width:calc(100% - 80px);white-space:nowrap;text-overflow:ellipsis">
+                <i class="fa fa-tags"></i>
+                <span style="font-weight:bold"><%- exam.subject %></span> (<%- i18n.t('exam.durationMinutes', {num: exam.duration}) %>)
+            </span>
+        </div>
+    </div>
+</div>
+</script>

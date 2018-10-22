@@ -1,0 +1,187 @@
+<script type="text/template" id="main-tpl">
+<style type="text/css">
+.panel-webcam,
+.panel-screenwebcam {
+    overflow: hidden;
+    text-align: center;
+    position: relative;
+}
+.panel-screenwebcam {
+    margin-bottom: -38px;
+}
+.panel-screen .screen-input {
+    display: none;
+}
+.screen-output-proctor {
+    height: 100%;
+    width: auto;
+}
+.button-sep {
+    display: inline-block;
+    width: 0;
+    height: 100%;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #fff;
+    vertical-align: middle;
+    margin-left: 1px;
+}
+.container {
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+.panel-videoblock {
+    position: relative;
+    float: left;
+    box-sizing: border-box;
+    border: 2px solid white;
+}
+.panel-videoblock.selected {
+    border: 2px solid blue;
+}
+.panel-webcam {
+    position: relative;
+    height: inherit;
+    width: inherit;
+}
+.webcam-input {
+    display: block;
+    height: 100%;
+    width: auto;
+    max-width: 100%;
+}
+</style>
+<div class="easyui-layout" data-options="fit:true">
+    <div data-options="region:'north',border:false" style="margin-bottom:1px;">
+        <div class="easyui-panel" style="padding:5px;height:28px;" data-options="fit:true">
+            <span class="text-item"><i class="fa fa-tags"></i><%- i18n.t('multivision.title') %></span>
+            <span class="easyui-menubutton" data-options="menu:'#main-menu',iconCls:'fa fa-bars'" style="float:right"></span>
+            <a href="javascript:void(0)" class="easyui-linkbutton screenshot-btn" data-options="plain:true,iconCls:'fa fa-camera'" style="float:right"><%- i18n.t('multivision.screenshotBtn') %></a>
+            <a href="javascript:void(0)" class="easyui-linkbutton verify-btn" data-options="plain:true,iconCls:'fa fa-unlock'" style="float:right"><%- i18n.t('multivision.identificationBtn') %></a>
+            <span class="button-sep" style="float:right"></span>
+            <a href="javascript:void(0)" class="easyui-linkbutton exam-add-btn" data-options="plain:true,iconCls:'fa fa-plus'" style="float:right"><%- i18n.t('multivision.addExamBtn') %></a>
+        </div>
+    </div>
+    <div class="ws-content" data-options="region:'center',border:false">
+        <div class="easyui-layout" data-options="fit:true">
+            <div data-options="region:'center',border:false" style="width:75%;">
+                <div class="easyui-layout" data-options="fit:true">
+                    <div class="container"></div>
+                </div>
+            </div>
+            <div data-options="region:'east',border:false" class="ws-widget" style="width:25%;min-width:300px;max-width:500px">
+                <div class="easyui-layout" data-options="fit:true">
+                    <div data-options="region:'north',border:false" class="ws-widget" style="height:20%">
+                        <div class="easyui-layout" data-options="fit:true">
+                            <div data-options="region:'north',border:false" style="margin-top:1px;height:100%;">
+                                <div class="easyui-panel ws-panel panel-webcam" title="<%- i18n.t('webcamera.title') %>" data-options="fit:true,iconCls:'fa fa-video-camera'">
+                                    <video class="screen-output-proctor" autoplay poster="images/webrtc.png"></video>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div data-options="region:'south',border:false" class="ws-widget" style="height:80%">
+                        <div class="easyui-layout" data-options="fit:true">
+                            <div data-options="region:'north',border:false" id="members-container" style="margin-top:1px;height:25%;">
+                                <div class="easyui-panel ws-panel panel-members" data-id="empty" title="<%- i18n.t('members.title') %>" data-options="fit:true,iconCls:'fa fa-users'"></div>
+                            </div>
+                            <div data-options="region:'center',border:false" id="notes-container" style="margin-top:1px;height:30%;">
+                                <div class="easyui-panel ws-panel panel-notes" data-id="empty" title="<%- i18n.t('notes.title') %>" data-options="fit:true,iconCls:'fa fa-check-square-o'"></div>
+                            </div>
+                            <div data-options="region:'south',border:false" id="chat-container" style="margin-top:1px;height:45%;">
+                                <div class="easyui-panel ws-panel panel-chat" data-id="empty" title="<%- i18n.t('chat.title') %>" data-options="fit:true,iconCls:'fa fa-comments-o'"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'south',border:false" style="margin-top:1px;">
+        <div class="easyui-panel" style="padding:5px;height:28px;overflow:hidden;" data-options="fit:true">
+            <span class="easyui-tooltip text-item" title="<%- i18n.t('multivision.connection') %>"><i class="fa fa-exchange"></i><span class="panel-widget network-widget" style="color:green"><%- i18n.t('multivision.online') %></span></span>
+            <span class="easyui-tooltip text-item" title="<%- i18n.t('multivision.time') %>"><i class="fa fa-clock-o"></i><span class="panel-widget server-time">00:00:00</span></span>
+            <span class="easyui-tooltip text-item" title="<%- i18n.t('multivision.duration') %>"><i class="fa fa-play"></i><span class="panel-widget duration-time">00:00:00</span></span>
+            <a href="javascript:void(0)" class="easyui-linkbutton exam-stop-btn" data-options="iconCls:'fa fa-ban'" style="float:right;color:red;margin-left:5px;width:100px;"><%- i18n.t('multivision.stopBtn') %></a>
+            <a href="javascript:void(0)" class="easyui-linkbutton exam-apply-btn" data-options="iconCls:'fa fa-check'" style="float:right;color:green;width:100px;"><%- i18n.t('multivision.applyBtn') %></a>
+        </div>
+    </div>
+</div>
+<div id="main-menu" style="width:160px;">
+    <div name="exam" data-options="iconCls:'fa fa-tags'"><%- i18n.t('multivision.exam') %></div>
+    <div name="passport" data-options="iconCls:'fa fa-graduation-cap'"><%- i18n.t('multivision.passport') %></div>
+    <div name="openVision" data-options="iconCls:'fa fa-external-link'"><%- i18n.t('multivision.openVision') %></div>
+    <div name="closeExam" data-options="iconCls:'fa fa-times'"><%- i18n.t('multivision.closeExam') %></div>
+    <div class="menu-sep"></div>
+    <div name="automute" data-options="iconCls:'fa fa-dot-circle-o'"><%- i18n.t('multivision.automute') %></div>
+    <div name="profile" data-options="iconCls:'fa fa-user'"><%- i18n.t('multivision.profile') %></div>
+    <div name="settings" data-options="iconCls:'fa fa-wrench'"><%- i18n.t('multivision.settings') %></div>
+    <div class="menu-sep"></div>
+    <div name="disconnect" data-options="iconCls:'fa fa-sign-out'"><%- i18n.t('multivision.disconnect') %></div>
+</div>
+<div id="screenshot-dlg" class="easyui-dialog" title="<%- i18n.t('multivision.screenshot.title') %>" style="padding:5px;width:500px;height:415px;text-align:center;" data-options="modal:true,closed:true">
+    <img alt="<%- i18n.t('multivision.screenshot.title') %>" style="height:240px;width:auto;max-width:100%;max-height:240px;margin-bottom:5px;">
+    <input type="text" class="easyui-textbox screenshot-comment" data-options="width:'100%',height:80,multiline:true,prompt:'<%- i18n.t('multivision.screenshot.commentPrompt') %>'">
+</div>
+<div id="exam-confirm-dlg" style="padding:5px" title="<%- i18n.t('multivision.submit.title') %>" data-options="width:350,height:245,modal:true,closed:true">
+    <div class="confirm-message" style="padding-bottom:10px">...</div> 
+    <div style="padding-bottom:5px"><%- i18n.t('multivision.submit.inputProtectionCode') %>: <span class="protection-code" style="font-weight:bold;letter-spacing:1px;"></span></div>
+    <input class="easyui-validatebox textbox protection-code-input" style="width:80px;font-size:12px;font-weight:bold;padding:3px;text-align:center;letter-spacing:2px;" maxlength="4">
+    <div style="padding-top:10px;padding-bottom:3px"><%- i18n.t('multivision.submit.comment') %>:</div>
+    <input class="easyui-textbox exam-comment" data-options="multiline:true,prompt:'<%- i18n.t('multivision.submit.commentPrompt') %>'" style="width:100%;height:50px;">
+</div>
+</script>
+<script type="text/template" id="verify-tpl">
+<table cellpadding="0">
+    <tr>
+        <td style="padding-right:4px"><%- i18n.t('multivision.verify.fullname') %>:</td>
+        <td style="font-weight:bold"><%- user.lastname %> <%- user.firstname %> <%- user.middlename %></td>
+    </tr>
+    <tr>
+        <td style="padding-right:4px"><%- i18n.t('multivision.verify.gender') %>:</td>
+        <td style="font-weight:bold">
+            <% if (user.gender) {  %>
+                <%- i18n.t('user.genders.' + user.gender) %>
+            <% } %>  
+        </td>
+    </tr>
+    <tr>
+        <td style="padding-right:4px"><%- i18n.t('multivision.verify.birthday') %>:</td>
+        <td style="font-weight:bold"><%- user.birthday %></td>
+    </tr>
+    <tr>
+        <td style="padding-right:4px"><%- i18n.t('multivision.verify.citizenship') %>:</td>
+        <td style="font-weight:bold">
+            <% if (i18n.t('countries.' + user.citizenship) != ('countries.' + user.citizenship)) {  %>
+                <%- i18n.t('countries.' + user.citizenship) %>
+            <% } else {%>
+                <%- user.citizenship %>
+            <% } %>
+        </td>
+    </tr>
+    <tr>
+        <td style="padding-right:4px"><%- i18n.t('multivision.verify.documentType') %>:</td>
+        <td style="font-weight:bold"><%- i18n.t('user.documentTypes.' + user.documentType) %></td>
+    </tr>
+    <tr>
+        <td style="padding-right:4px"><%- i18n.t('multivision.verify.documentNumber') %>:</td>
+        <td style="font-weight:bold"><%- user.documentNumber %></td>
+    </tr>
+    <tr>
+        <td style="padding-right:4px"><%- i18n.t('multivision.verify.documentIssueDate') %>:</td>
+        <td style="font-weight:bold"><%- user.documentIssueDate %></td>
+    </tr>
+</table>
+</script>
+<script type="text/template" id="video-block-tpl">
+<div class="panel-videoblock" data-id="<%- exam._id %>"></div>
+</script>
+<script type="text/template" id="members-block-tpl">
+<div class="easyui-panel ws-panel panel-members" data-id="<%- exam._id %>" title="<%- i18n.t('members.title') %>" data-options="fit:true,iconCls:'fa fa-users'"></div>
+</script>
+<script type="text/template" id="notes-block-tpl">
+<div class="easyui-panel ws-panel panel-notes" data-id="<%- exam._id %>" title="<%- i18n.t('notes.title') %>" data-options="fit:true,iconCls:'fa fa-check-square-o'"></div>
+</script>
+<script type="text/template" id="chat-block-tpl">
+<div class="easyui-panel ws-panel panel-chat" data-id="<%- exam._id %>" title="<%- i18n.t('chat.title') %>" data-options="fit:true,iconCls:'fa fa-comments-o'"></div>
+</script>

@@ -280,7 +280,7 @@ define([], function() {
             }
         },
         toggleAudio: function(flag) {
-            if (typeof audio != 'undefined') {
+            if (typeof flag != 'undefined') {
                 this.audio = flag;
             }
             else {
@@ -293,7 +293,7 @@ define([], function() {
             return this.audio;
         },
         toggleVideo: function(flag) {
-            if (typeof video != 'undefined') {
+            if (typeof flag != 'undefined') {
                 this.video = flag;
             }
             else {

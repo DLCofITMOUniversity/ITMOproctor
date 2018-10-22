@@ -1,0 +1,22 @@
+<script type="text/template" id="main-tpl">
+<table class="easyui-datagrid adding-table" data-options="toolbar:'#toolbar',fit:true,border:false,rownumbers:true,singleSelect:true,fitColumns:true,rownumbers:true"></table>
+<div id="toolbar">
+    <a href="javascript:void(0);" class="easyui-linkbutton status-btn1" data-options="plain:true,toggle:true,group:'g1',selected:true"><%- i18n.t('multivision.adding.my') %></a> |
+    <a href="javascript:void(0);" class="easyui-linkbutton status-btn2" data-options="plain:true,toggle:true,group:'g1'"><%- i18n.t('multivision.adding.all') %></a>
+</div>
+</script>
+<script type="text/template" id="student-item-tpl">
+<a href="javascript:void(0);" class="student-btn" data-id="<%- userId %>" title="<%- i18n.t('multivision.adding.studentProfile') %>">
+    <%- lastname || i18n.t('multivision.adding.unknown') %> <%- firstname[0] %>. <%- middlename ? (middlename[0] + '.') : '' %>
+</a>
+</script>
+<script type="text/template" id="inspector-item-tpl">
+<a href="javascript:void(0);" class="inspector-btn" data-id="<%- userId %>" title="<%- i18n.t('multivision.adding.inspectorProfile') %>">
+    <%- lastname || i18n.t('multivision.adding.unknown') %> <%- firstname[0] %>. <%- middlename ? (middlename[0] + '.') : '' %>
+</a>
+</script>
+<script type="text/template" id="subject-item-tpl">
+<a href="javascript:void(0);" class="exam-btn" data-id="<%- examId %>" title="<%- i18n.t('multivision.adding.examInfo') %>">
+    <%- subject %>
+</a>
+</script>

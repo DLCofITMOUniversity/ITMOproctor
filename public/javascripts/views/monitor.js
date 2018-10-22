@@ -40,6 +40,7 @@ define([
         initialize: function() {
             // Variables
             var self = this;
+            this.multivisionFlag = false;
             // Templates
             this.templates = _.parseTemplate(template);
             // Sub views
@@ -119,6 +120,9 @@ define([
                     switch (item.name) {
                         case "schedule":
                             self.view.schedule.doOpen();
+                            break;
+                        case "multivision":
+                            self.toggleMultivision(item);
                             break;
                         case "profile":
                             self.view.profileEditor.doOpen();
@@ -246,6 +250,21 @@ define([
             });
             this.stickit(app.time);
             return this;
+        },
+        toggleMultivision: function(item) {
+            this.multivisionFlag = !this.multivisionFlag;
+            if (this.multivisionFlag) {
+                this.$Menu.menu('setIcon', {
+                    target: item.target,
+                    iconCls: 'fa fa-dot-circle-o'
+                });
+            }
+            else {
+                this.$Menu.menu('setIcon', {
+                    target: item.target,
+                    iconCls: 'fa fa-circle-o'
+                });
+            }
         },
         getDates: function() {
             var fromVal = this.$FromDate.datebox('getValue');
@@ -396,13 +415,14 @@ define([
         doStart: function(e) {
             var element = e.currentTarget;
             var examId = $(element).attr('data-id');
+            var path = this.multivisionFlag ? 'multivision' : 'vision';
             if (SINGLE_MODE) {
-                app.router.navigate("vision/" + examId, {
+                app.router.navigate(path + '/' + examId, {
                     trigger: true
                 });
             }
             else {
-                window.open("#vision/" + examId, examId);
+                window.open('#' + path + '/' + examId, examId);
             }
         }
     });

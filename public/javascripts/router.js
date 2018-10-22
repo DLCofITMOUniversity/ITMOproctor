@@ -12,6 +12,8 @@ define([], function() {
             "talk/:examId": "talk",
             "monitor": "monitor",
             "vision/:examId": "vision",
+            "multivision/:examId": "multivision",
+            "multivision/": "multivision",
             "admin": "admin",
             "*path": "main"
         },
@@ -96,6 +98,16 @@ define([], function() {
             var self = this;
             require([
                 "views/vision"
+            ], function(View) {
+                self.render(View, {
+                    examId: examId
+                });
+            });
+        },
+        multivision: function(examId) {
+            var self = this;
+            require([
+                "views/multivision"
             ], function(View) {
                 self.render(View, {
                     examId: examId

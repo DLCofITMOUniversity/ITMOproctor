@@ -57,6 +57,7 @@ define([
                     });
                 },
                 onStart: function(file) {
+                    self.$Progress = self.$(".chat-progress");
                     self.$Progress.progressbar('setColor', null);
                     self.$AttachBtn.hide();
                     self.$FileBtn.show();

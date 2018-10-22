@@ -49,6 +49,8 @@ define({
         "unset": "Не назначен",
         "assigned": "Назначен",
         "no": "Нет",
+        "timeExpires": "Время экзамена истекает",
+        "newNotification": "Новое уведомление",
         "durationMinutes": "%{num} мин.",
         "datesBetween": "с %{from} по %{to}",
         "missing": "Отсутствует",
@@ -233,6 +235,7 @@ define({
         "toDatePrompt": "Окончание...",
         "searchTextPrompt": "Поиск...",
         "schedule": "Планирование",
+        "multiproctoring": "Мультипрокторинг",
         "profile": "Профиль",
         "settings": "Настройки",
         "demo": "Проверка",
@@ -347,6 +350,68 @@ define({
         "verify": {
             "success": "Личность слушателя подтверждена",
             "fail": "Личность слушателя не установлена"
+        }
+    },
+    "multivision": {
+        "title": "Мультипрокторинг",
+        "online": "В сети",
+        "offline": "Не в сети",
+        "connection": "Статус соединения",
+        "time": "Текущее время",
+        "duration": "Продолжительность экзамена",
+        "settings": "Настройки",
+        "exam": "Об экзамене",
+        "passport": "О слушателе",
+        "openVision": "В отдельном окне",
+        "closeExam": "Закрыть экзамен",
+        "automute": "Автопауза",
+        "profile": "Профиль",
+        "disconnect": "Отключиться",
+        "changeStatus": "Статус экзамена в LMS изменился: %{status}",
+        "screenshot": {
+            "title": "Снимок экрана",
+            "save": "Сохранить",
+            "close": "Закрыть",
+            "commentPrompt": "Введите комментарий..."
+        },
+        "screenshotBtn": "Снимок экрана",
+        "identificationBtn": "Идентификация",
+        "addExamBtn": "Добавить экзамен",
+        "stopBtn": "Прервать",
+        "applyBtn": "Принять",
+        "submit": {
+            "title": "Завершить экзамен",
+            "message": "Подтвердите свое решение %{resolution} экзамен, отменить операцию будет невозможно",
+            "true": "принять",
+            "false": "прервать",
+            "inputProtectionCode": "Введите код подтверждения",
+            "incorrectProtectionCode": "Неверный код подтверждения",
+            "comment": "Комментарий",
+            "commentPrompt": "Введите комментарий...",
+            "submitBtn": "Подтвердить",
+            "cancelBtn": "Отмена"
+        },
+        "verify": {
+            "success": "Личность слушателя подтверждена",
+            "fail": "Личность слушателя не установлена"
+        },
+        "adding": {
+            "title": "Расписание экзаменов",
+            "add": "Добавить",
+            "close": "Закрыть",
+            "my": "Мои",
+            "all": "Все",
+            "studentProfile": "Профиль слушателя",
+            "inspectorProfile": "Профиль проктора",
+            "examInfo": "Карточка экзамена",
+            "unknown": "Неизвестный",
+            "student": "Слушатель",
+            "inspector": "Проктор",
+            "subject": "Экзамен",
+            "status": "Статус",
+            "warning": "Внимание",
+            "limitWarning": "Достигнут максимум одновременных экзаменов",
+            "alreadyAdded": "Выбранный экзамен уже был добавлен"
         }
     },
     "verify": {

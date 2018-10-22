@@ -2,16 +2,13 @@
   "name": "proctor-client",
   "version": "0.3.1",
   "description": "System of distant supervision",
-  "contributors": [{
-    "name": "Anton Skshidlevsky",
-    "email": "meefik@gmail.com"
-  }],
+  "contributors": [{ }],
   "repository": {
     "type": "git",
-    "url": "git://github.com/meefik/ITMOproctor.git"
+    "url": "git://github.com/openeduITMO/ITMOproctor.git"
   },
   "bugs": {
-    "url": "https://github.com/meefik/ITMOproctor/issues"
+    "url": "https://github.com/openeduITMO/ITMOproctor/issues"
   },
   "licenses": [{
       "type": "GPL-3.0",

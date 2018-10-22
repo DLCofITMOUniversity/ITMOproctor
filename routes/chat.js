@@ -26,7 +26,8 @@ router.post('/:examId', function(req, res) {
         if (!err && data) {
             res.json(data);
             req.notify('chat-' + args.examId, {
-                userId: args.userId
+                userId: args.userId,
+                examId: args.examId
             });
         }
         else {
