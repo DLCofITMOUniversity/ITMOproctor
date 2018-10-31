@@ -12,7 +12,8 @@
     },
     "schedule": {
         "offset": 0,
-        "interval": 15
+        "interval": 10,
+        "examOffset": 15
     },
     "mongoose": {
         "uri": "mongodb://localhost:27017/proctor"

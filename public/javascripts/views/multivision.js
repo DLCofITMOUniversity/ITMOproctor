@@ -79,10 +79,10 @@ define([
             this.protectionCode = null;
             this.audioAutomuteFlag = true;
             this.videoAutomuteFlag = false;
+            this.alwaysOnTop = false;
             this.examsCount = 0;
             this.exams = {};
             this.exam = {};
-            this.cameraState = false;
             // Templates
             this.templates = _.parseTemplate(template);
             // Sub views
@@ -204,6 +204,7 @@ define([
             this.$ExamComment = this.$DialogConfirm.find('.exam-comment');
             this.$ApplyText = this.$DialogConfirm.find('.apply-text');
             this.$RejectText = this.$DialogConfirm.find('.reject-text');
+            this.$ExamComment = this.$DialogConfirm.find('.exam-comment');
             this.$VideoContainer = this.$('.container');
             this.$PanelWebcam = this.$('.panel-webcam');
             this.$PanelWebcamVideo = this.$PanelWebcam.find('video');
@@ -233,6 +234,9 @@ define([
                             break;
                         case "audioAutomute":
                             self.toggleAudioAutomute(item);
+                            break;
+                        case "alwaysOnTop":
+                            self.toggleAlwaysOnTop(item);
                             break;
                         case "profile":
                             self.view.profile.doOpen();
@@ -329,6 +333,23 @@ define([
                 });
             }
             else {
+                this.$Menu.menu('setIcon', {
+                    target: item.target,
+                    iconCls: 'fa fa-circle-o'
+                });
+            }
+        },
+        toggleAlwaysOnTop: function(item) {
+            this.alwaysOnTop = !this.alwaysOnTop;
+            if (this.alwaysOnTop) {
+                _.postMessage('enableAlwaysOnTop', '*');
+                this.$Menu.menu('setIcon', {
+                    target: item.target,
+                    iconCls: 'fa fa-dot-circle-o'
+                });
+            }
+            else {
+                _.postMessage('disableAlwaysOnTop', '*');
                 this.$Menu.menu('setIcon', {
                     target: item.target,
                     iconCls: 'fa fa-circle-o'
@@ -642,6 +663,7 @@ define([
             var reset = function() {
                 self.generateCode();
                 self.$ProtectionCode.text(self.protectionCode);
+                self.$ExamComment.textbox('clear');
                 self.$ProtectionCodeInput.val('');
                 self.$ProtectionCodeInput.focus();
             };

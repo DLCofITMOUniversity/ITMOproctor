@@ -581,9 +581,9 @@ var db = {
             }).exec(function(err, exam) {
                 if (err || !exam) return callback(err);
                 var beginDate = moment(args.data.beginDate);
-                var interval = Number(config.get('schedule:interval'));
+                var examOffset = Number(config.get('schedule:examOffset'));
                 var duration = Number(exam.duration);
-                var endDate = moment(beginDate).add(duration + interval, 'minutes');
+                var endDate = moment(beginDate).add(duration + examOffset, 'minutes');
                 var data = {
                     leftDate: beginDate,
                     rightDate: endDate,
@@ -613,11 +613,14 @@ var db = {
             var Exam = require('./models/exam');
             var Schedule = require('./models/schedule');
             var interval = Number(config.get('schedule:interval'));
-            var duration = Math.ceil((Number(args.data.duration) + interval) / 60);
+            var examOffset = Number(config.get('schedule:examOffset'));
+            var duration = Math.ceil((Number(args.data.duration) + examOffset) / interval);
             var offset = Number(config.get('schedule:offset'));
             var now = moment().add(offset, 'hours');
-            var leftDate = moment.max(now, moment(args.data.leftDate)).startOf('hour');
-            var rightDate = moment(args.data.rightDate).add(1, 'hours').startOf('hour');
+            var leftDate = moment.max(now, moment(args.data.leftDate));
+            leftDate = leftDate.minutes(Math.floor(leftDate.minutes() / interval) * interval).startOf('minute');
+            var rightDate = moment(args.data.rightDate).add(interval, 'minutes');
+            rightDate = rightDate.minutes(Math.floor(rightDate.minutes() / interval) * interval).startOf('minute');
             var timetable = {};
             Schedule.find({
                 '$and': [{
@@ -631,15 +634,15 @@ var db = {
                 }]
             }).exec(function(err, schedules) {
                 if (err) return callback(err);
-                // формируем таблицу доступных рабочих часов каждого инспектора
+                // формируем таблицу доступных рабочих интервалов каждого инспектора
                 for (var i = 0, li = schedules.length; i < li; i++) {
                     var inspector = schedules[i].inspector;
                     var beginDate = moment(schedules[i].beginDate);
                     var endDate = moment(schedules[i].endDate);
                     var concurrent = schedules[i].concurrent;
                     if (!timetable[inspector]) timetable[inspector] = [];
-                    var start = beginDate.diff(leftDate, 'hours');
-                    var times = moment.min(rightDate, endDate).diff(beginDate, 'hours', true);
+                    var start = beginDate.diff(leftDate, 'minutes') / interval;
+                    var times = moment.min(rightDate, endDate).diff(beginDate, 'minutes', true) / interval;
                     for (var j = start < 0 ? 0 : start, lj = start + times; j < lj; j++) {
                         if (timetable[inspector][j]) timetable[inspector][j] += concurrent;
                         else timetable[inspector][j] = concurrent;
@@ -663,15 +666,15 @@ var db = {
                         var inspector = exams[i].inspector;
                         var beginDate = moment(exams[i].beginDate);
                         var endDate = moment(exams[i].endDate);
-                        var start = beginDate.diff(leftDate, 'hours');
-                        var times = moment.min(rightDate, endDate).diff(beginDate, 'hours', true);
+                        var start = beginDate.diff(leftDate, 'minutes') / interval;
+                        var times = moment.min(rightDate, endDate).diff(beginDate, 'minutes', true) / interval;
                         for (var j = start < 0 ? 0 : start, lj = start + times; j < lj; j++) {
                             if (timetable[inspector] && timetable[inspector][j] > 0) timetable[inspector][j]--;
                         }
                     }
                     //console.log(timetable);
-                    // определяем доступные для записи часы с учетом duration
-                    var hours = [];
+                    // определяем доступные для записи интервалы с учетом duration
+                    var intervals = [];
                     var inspectors = [];
                     for (var inspector in timetable) {
                         var arr = timetable[inspector];
@@ -680,21 +683,21 @@ var db = {
                         for (var m = 0, lm = arr.length; m < lm; m++) {
                             if (!arr[m] > 0) seq = 0;
                             else if (++seq >= duration) {
-                                var n = m + 1 - duration;
-                                hours.push(n);
+                                var n = (m + 1 - duration) * interval;
+                                intervals.push(n);
                                 available = true;
                             }
                         }
                         if (available) inspectors.push(inspector);
                     }
-                    //console.log(hours);
+                    //console.log(intervals);
                     // сортируем, исключаем повторы и преобразуем в даты
-                    var dates = hours.sort(function(a, b) {
+                    var dates = intervals.sort(function(a, b) {
                         return a - b;
                     }).filter(function(item, pos, arr) {
                         return !pos || item != arr[pos - 1];
                     }).map(function(v) {
-                        return moment(leftDate).add(v, 'hours');
+                        return moment(leftDate).add(v, 'minutes');
                     });
                     //callback(null, dates);
                     callback(null, {

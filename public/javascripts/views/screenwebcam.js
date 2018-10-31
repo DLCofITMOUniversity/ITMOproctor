@@ -85,6 +85,8 @@ define([
                         self.play(student._id);
                         $(this).parent().find('.fa-microphone-slash').attr('class', 'fa fa-microphone');
                         $(this).parent().find('.fa-eye-slash').attr('class', 'fa fa-eye');
+                        self.buttonAudioState = true;
+                        self.buttonVideoState = true;
                         //self.mute(false); // todo play without selection
                         self.updateMuteState();
                     }

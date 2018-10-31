@@ -62,6 +62,12 @@ function eventHandler(event) {
                 });
             });
             break;
+        case 'enableAlwaysOnTop':
+            win.setAlwaysOnTop(true);
+            break;
+        case 'disableAlwaysOnTop':
+            win.setAlwaysOnTop(false);
+            break;
         case 'closeWindow':
             win.window.close();
             break;

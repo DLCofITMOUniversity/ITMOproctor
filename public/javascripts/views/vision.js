@@ -61,7 +61,8 @@ define([
             var self = this;
             this.options = options || {};
             this.protectionCode = null;
-            this.automuteFlag = false;
+            this.audioAutomuteFlag = false;
+            this.videoAutomuteFlag = false;
             // Templates
             this.templates = _.parseTemplate(template);
             // Exam model
@@ -91,7 +92,10 @@ define([
                 }),
                 webcam: new WebcamView({
                     examId: this.options.examId,
-                    userId: app.profile.get('_id')
+                    userId: app.profile.get('_id'),
+                    audioAutomuteFlag: this.audioAutomuteFlag,
+                    videoAutomuteFlag: this.videoAutomuteFlag,
+                    windowFocus: true
                 }),
                 screen: new ScreenView({
                     examId: this.options.examId,
@@ -109,13 +113,16 @@ define([
                 }
             };
             this.focusEventHandler = function(event) {
-                var isMuted = self.$('.fa-eye-slash').length === 1;
-                self.view.webcam.mute(isMuted);
+                self.view.webcam.windowFocus = true;
+                self.view.webcam.updateMuteState();
             };
             this.blurEventHandler = function(event) {
-                self.view.webcam.mute(true);
+                self.view.webcam.windowFocus = false;
+                self.view.webcam.updateMuteState();
             };
             window.addEventListener('message', this.messageEventHandler);
+            window.addEventListener('focus', this.focusEventHandler);
+            window.addEventListener('blur', this.blurEventHandler);
             // Socket events
             this.connectHandler = function(data) {
                 self.$NetworkWidget.html(i18n.t('vision.online'));
@@ -186,8 +193,11 @@ define([
                             var student = self.exam.get('student');
                             if (student) self.view.passport.doOpen(student._id);
                             break;
-                        case "automute":
-                            self.toggleAutomute(item);
+                        case "audioAutomute":
+                            self.toggleAudioAutomute(item);
+                            break;
+                        case "alwaysOnTop":
+                            self.toggleAlwaysOnTop(item);
                             break;
                         case "profile":
                             self.view.profile.doOpen();
@@ -270,19 +280,34 @@ define([
             app.io.notify.removeListener('disconnect', this.disconnectHandler);
             this.remove();
         },
-        toggleAutomute: function(item) {
-            this.automuteFlag = !this.automuteFlag;
-            if (this.automuteFlag) {
-                window.addEventListener('focus', this.focusEventHandler);
-                window.addEventListener('blur', this.blurEventHandler);
+        toggleAudioAutomute: function(item) {
+            this.audioAutomuteFlag = !this.audioAutomuteFlag;
+            this.view.webcam.audioAutomuteFlag = this.audioAutomuteFlag;
+            this.view.webcam.updateMuteState();
+            if (this.audioAutomuteFlag) {
                 this.$Menu.menu('setIcon', {
                     target: item.target,
                     iconCls: 'fa fa-dot-circle-o'
                 });
             }
             else {
-                window.removeEventListener('focus', this.focusEventHandler);
-                window.removeEventListener('blur', this.blurEventHandler);
+                this.$Menu.menu('setIcon', {
+                    target: item.target,
+                    iconCls: 'fa fa-circle-o'
+                });
+            }
+        },
+        toggleAlwaysOnTop: function(item) {
+            this.alwaysOnTop = !this.alwaysOnTop;
+            if (this.alwaysOnTop) {
+                _.postMessage('enableAlwaysOnTop', '*');
+                this.$Menu.menu('setIcon', {
+                    target: item.target,
+                    iconCls: 'fa fa-dot-circle-o'
+                });
+            }
+            else {
+                _.postMessage('disableAlwaysOnTop', '*');
                 this.$Menu.menu('setIcon', {
                     target: item.target,
                     iconCls: 'fa fa-circle-o'

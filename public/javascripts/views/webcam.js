@@ -11,6 +11,11 @@ define([
         className: "webcam-view",
         initialize: function(options) {
             this.options = options || {};
+            this.audioAutomuteFlag = this.options.audioAutomuteFlag;
+            this.videoAutomuteFlag = this.options.videoAutomuteFlag;
+            this.windowFocus = this.options.windowFocus;
+            this.buttonAudioState = true;
+            this.buttonVideoState = true;
             this.templates = _.parseTemplate(template);
             this.webcall = new WebcallModel({
                 userid: "camera-" + this.options.examId + "-" + this.options.userId,
@@ -66,6 +71,9 @@ define([
                         self.play(student._id);
                         $(this).parent().find('.fa-microphone-slash').attr('class', 'fa fa-microphone');
                         $(this).parent().find('.fa-eye-slash').attr('class', 'fa fa-eye');
+                        self.buttonAudioState = true;
+                        self.buttonVideoState = true;
+                        self.updateMuteState();
                     }
                 }, {
                     iconCls: 'fa fa-pause',
@@ -75,24 +83,26 @@ define([
                 }, {
                     iconCls: 'fa fa-microphone',
                     handler: function() {
-                        var audio = self.webcall.toggleAudio();
-                        if (audio) {
+                        self.buttonAudioState = !self.buttonAudioState;
+                        if (buttonAudioState) {
                             $(this).attr('class', 'fa fa-microphone');
                         }
                         else {
                             $(this).attr('class', 'fa fa-microphone-slash');
                         }
+                        self.updateMuteState();
                     }
                 }, {
                     iconCls: 'fa fa-eye',
                     handler: function() {
-                        var video = self.webcall.toggleVideo();
-                        if (video) {
+                        self.buttonVideoState = !self.buttonVideoState;
+                        if (buttonVideoState) {
                             $(this).attr('class', 'fa fa-eye');
                         }
                         else {
                             $(this).attr('class', 'fa fa-eye-slash');
                         }
+                        self.updateMuteState();
                     }
                 }]
             });
@@ -130,6 +140,28 @@ define([
         mute: function(state) {
             this.webcall.toggleAudio(!state);
             this.webcall.toggleVideo(!state);
+        },
+        updateMuteState: function() {
+            var aState = this.getAudioState();
+            var newAState = false;
+            if (this.audioAutomuteFlag && this.windowFocus && this.buttonAudioState) newAState = true;
+            else if (!this.audioAutomuteFlag && this.buttonAudioState) newAState = true;
+
+            var vState = this.getVideoState();
+            var newVState = false;
+            if (this.videoAutomuteFlag && this.windowFocus && this.buttonVideoState) newVState = true;
+            else if (!this.videoAutomuteFlag && this.buttonVideoState) newVState = true;
+
+            if (aState != newAState)
+                this.webcall.toggleAudio(newAState);
+            if (vState != newVState)
+                this.webcall.toggleVideo(newVState);
+        },
+        getAudioState: function() {
+            return this.webcall.audio;
+        },
+        getVideoState: function() {
+            return this.webcall.video;
         },
         play: function(userId) {
             var peer = "camera-" + this.options.examId + "-" + userId;
