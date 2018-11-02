@@ -220,6 +220,9 @@ define({
         "begin": "Начало",
         "end": "Окончание",
         "concurrent": "Кол-во сессий",
+        "concurrentTooltip": "Максимальное количество одновременно идущих сессий",
+        "maxExamsBeginnings": "Старты",
+        "maxExamsBeginningsTooltip": "Максимальное количество одновременно начинающихся экзаменов",
         "dates": "Даты",
         "sessions": "Сессии",
         "beginDate": "Дата начала",
@@ -501,7 +504,10 @@ define({
             "inspector": "Проктор",
             "beginDate": "Начало работы",
             "endDate": "Окончание работы",
-            "concurrent": "Кол-во сессий"
+            "concurrent": "Кол-во сессий",
+            "concurrentTooltip": "Максимальное количество одновременно идущих сессий",
+            "maxExamsBeginnings": "Старты",
+            "maxExamsBeginningsTooltip": "Максимальное количество одновременно начинающихся экзаменов"
         },
         "usersStats": {
             "title": "Пользователи",

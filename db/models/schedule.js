@@ -25,6 +25,11 @@ var Schedule = new Schema({
     concurrent:{
         type: Number,
         default: 1
+    },
+    // Число одновременно начинающихся экзаменов
+    maxExamsBeginnings:{
+        type: Number,
+        default: 1
     }
 });
 module.exports = mongoose.model('Schedule', Schedule);

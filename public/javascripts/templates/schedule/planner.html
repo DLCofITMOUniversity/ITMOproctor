@@ -4,7 +4,9 @@
     <%- i18n.t('schedule.dates') %>:
     <input class="easyui-datetimebox schedule-from" style="width:150px;" data-options="prompt:'<%- i18n.t('schedule.beginDate') %>'"/>
     <input class="easyui-datetimebox schedule-to" style="width:150px;margin-bottom:3px;"  data-options="prompt:'<%- i18n.t('schedule.endDate') %>'"/>
-    &nbsp;<%- i18n.t('schedule.sessions') %>:
+    &nbsp;<span class="easyui-tooltip" title="<%- i18n.t('schedule.sessionsTooltip') %>"><%- i18n.t('schedule.sessions') %>:</span>
     <input class="easyui-numberspinner schedule-concurrent" style="width:60px;" data-options="min:1,value:1"/>
+    &nbsp;<span class="easyui-tooltip" title="<%- i18n.t('schedule.maxExamsBeginningsTooltip') %>"><%- i18n.t('schedule.maxExamsBeginnings') %></span>:
+    <input class="easyui-numberspinner schedule-maxExamsBeginnings" style="width:60px;" data-options="min:1,value:1"/>
 </div>
 </script>

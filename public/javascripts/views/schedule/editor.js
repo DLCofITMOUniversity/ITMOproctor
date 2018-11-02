@@ -28,7 +28,7 @@ define([
             var dialog = $(this.el).dialog({
                 title: i18n.t('schedule.title'),
                 width: 500,
-                height: 250,
+                height: 260,
                 closed: true,
                 modal: true,
                 content: tpl(data),

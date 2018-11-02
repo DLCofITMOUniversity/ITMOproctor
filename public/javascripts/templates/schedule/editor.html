@@ -23,9 +23,15 @@
                 </td>
             </tr>
             <tr>
-                <td><strong><%- i18n.t('schedule.sessions') %>:</strong></td>
+                <td><strong class="easyui-tooltip" title="<%- i18n.t('schedule.concurrentTooltip') %>"><%- i18n.t('schedule.sessions') %>:</strong></td>
                 <td>
-                    <input name="concurrent" class="easyui-numberspinner schedule-concurrent" style="width:60px;" data-options="required:true,tipPosition:'bottom',min:1,value:1"/>
+                    <input name="concurrent" class="easyui-numberspinner schedule-concurrent" style="width:60px;" data-options="required:true,tipPosition:'bottom',min:1,value:1,max:9"/>
+                </td>
+            </tr>
+            <tr>
+                <td><strong class="easyui-tooltip" title="<%- i18n.t('schedule.maxExamsBeginningsTooltip') %>"><%- i18n.t('schedule.maxExamsBeginnings') %>:</strong></td>
+                <td>
+                    <input name="maxExamsBeginnings" class="easyui-numberspinner schedule-maxExamsBeginnings" style="width:60px;" data-options="required:true,tipPosition:'bottom',min:1,value:1,max:9"/>
                 </td>
             </tr>
         </table>

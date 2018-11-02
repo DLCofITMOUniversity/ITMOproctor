@@ -220,6 +220,9 @@ define({
         "begin": "Start",
         "end": "End",
         "concurrent": "Sessions",
+        "concurrentTooltip": "Maximum number of concurrent sessions",
+        "maxExamsBeginnings": "Beginnings",
+        "maxExamsBeginningsTooltip": "Maximum number of simultaneously beginning exams",
         "dates": "Dates",
         "sessions": "Sessions",
         "beginDate": "Start date",
@@ -501,7 +504,10 @@ define({
             "inspector": "Proctor",
             "beginDate": "Start date",
             "endDate": "End date",
-            "concurrent": "Sessions"
+            "concurrent": "Sessions",
+            "concurrentTooltip": "Maximum number of concurrent sessions",
+            "maxExamsBeginnings": "Beginnings",
+            "maxExamsBeginningsTooltip": "Maximum number of simultaneously beginning exams"
         },
         "usersStats": {
             "title": "Users",

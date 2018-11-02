@@ -26,7 +26,7 @@ define([
             };
             var dialog = $(this.el).dialog({
                 title: i18n.t('schedule.title'),
-                width: 500,
+                width: 660,
                 height: 450,
                 closed: true,
                 modal: true,
@@ -38,11 +38,13 @@ define([
                         var beginDate = self.$BeginDate.datetimebox('getValue');
                         var endDate = self.$EndDate.datetimebox('getValue');
                         var concurrent = self.$Concurrent.numberspinner('getValue');
+                        var maxExamsBeginnings = self.$MaxExamsBeginnings.numberspinner('getValue');
                         if (beginDate && endDate && concurrent) {
                             self.$Grid.datagrid('appendRow', {
                                 beginDate: moment(beginDate, 'DD.MM.YYYY HH:mm'),
                                 endDate: moment(endDate, 'DD.MM.YYYY HH:mm'),
-                                concurrent: concurrent
+                                concurrent: concurrent,
+                                maxExamsBeginnings: maxExamsBeginnings
                             });
                         }
                     }
@@ -75,7 +77,8 @@ define([
                                 self.model.save({
                                     beginDate: element.beginDate,
                                     endDate: element.endDate,
-                                    concurrent: element.concurrent
+                                    concurrent: element.concurrent,
+                                    maxExamsBeginnings: element.maxExamsBeginnings
                                 }, {
                                     success: function(model) {
                                         self.$Dialog.dialog('close');
@@ -109,6 +112,7 @@ define([
             this.$BeginDate = this.$('.schedule-from');
             this.$EndDate = this.$('.schedule-to');
             this.$Concurrent = this.$('.schedule-concurrent');
+            this.$MaxExamsBeginnings = this.$('.schedule-maxExamsBeginnings');
             this.$Grid = this.$('.schedule-table');
             this.$Grid.datagrid({
                 columns: [
@@ -128,7 +132,11 @@ define([
                         }
                     }, {
                         field: 'concurrent',
-                        title: i18n.t('schedule.concurrent'),
+                        title: '<span title="' + i18n.t('schedule.concurrentTooltip') +'">' + i18n.t('schedule.concurrent') + '</span>',
+                        width: 150
+                    }, {
+                        field: 'maxExamsBeginnings',
+                        title: '<span title="' + i18n.t('schedule.maxExamsBeginningsTooltip') +'">' + i18n.t('schedule.maxExamsBeginnings') + '</span>',
                         width: 150
                     }]
                 ]

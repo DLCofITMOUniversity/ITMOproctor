@@ -622,6 +622,7 @@ var db = {
             var rightDate = moment(args.data.rightDate).add(interval, 'minutes');
             rightDate = rightDate.minutes(Math.floor(rightDate.minutes() / interval) * interval).startOf('minute');
             var timetable = {};
+            var examsBeginnings = {};
             Schedule.find({
                 '$and': [{
                     beginDate: {
@@ -640,12 +641,16 @@ var db = {
                     var beginDate = moment(schedules[i].beginDate);
                     var endDate = moment(schedules[i].endDate);
                     var concurrent = schedules[i].concurrent;
+                    var maxExamsBeginnings = schedules[i].maxExamsBeginnings;
                     if (!timetable[inspector]) timetable[inspector] = [];
+                    if (!examsBeginnings[inspector]) examsBeginnings[inspector] = [];
                     var start = beginDate.diff(leftDate, 'minutes') / interval;
                     var times = moment.min(rightDate, endDate).diff(beginDate, 'minutes', true) / interval;
                     for (var j = start < 0 ? 0 : start, lj = start + times; j < lj; j++) {
                         if (timetable[inspector][j]) timetable[inspector][j] += concurrent;
                         else timetable[inspector][j] = concurrent;
+                        if (examsBeginnings[inspector][j]) examsBeginnings[inspector][j] += maxExamsBeginnings;
+                        else examsBeginnings[inspector][j] = maxExamsBeginnings;
                     }
                 }
                 //console.log(timetable);
@@ -668,7 +673,9 @@ var db = {
                         var endDate = moment(exams[i].endDate);
                         var start = beginDate.diff(leftDate, 'minutes') / interval;
                         var times = moment.min(rightDate, endDate).diff(beginDate, 'minutes', true) / interval;
-                        for (var j = start < 0 ? 0 : start, lj = start + times; j < lj; j++) {
+                        var j = start < 0 ? 0 : start;
+                        if (examsBeginnings[inspector] && examsBeginnings[inspector][j] > 0) examsBeginnings[inspector][j]--;
+                        for (var lj = start + times; j < lj; j++) {
                             if (timetable[inspector] && timetable[inspector][j] > 0) timetable[inspector][j]--;
                         }
                     }
@@ -683,7 +690,8 @@ var db = {
                         for (var m = 0, lm = arr.length; m < lm; m++) {
                             if (!arr[m] > 0) seq = 0;
                             else if (++seq >= duration) {
-                                var n = (m + 1 - duration) * interval;
+                                var n = (m + 1 - duration);
+                                if (examsBeginnings[inspector][n] <= 0) continue;
                                 intervals.push(n);
                                 available = true;
                             }
@@ -697,7 +705,7 @@ var db = {
                     }).filter(function(item, pos, arr) {
                         return !pos || item != arr[pos - 1];
                     }).map(function(v) {
-                        return moment(leftDate).add(v, 'minutes');
+                        return moment(leftDate).add(v * interval, 'minutes');
                     });
                     //callback(null, dates);
                     callback(null, {
@@ -1034,12 +1042,13 @@ var db = {
             var offset = Number(config.get('schedule:offset'));
             var now = moment().add(offset, 'hours').startOf('hour');
             if (beginDate >= endDate || beginDate < now ||
-                args.data.concurrent < 1) return callback();
+                args.data.concurrent < 1 || args.data.maxExamsBeginnings < 1) return callback();
             var schedule = new Schedule({
                 inspector: args.userId || args.data.inspector,
                 beginDate: beginDate,
                 endDate: endDate,
-                concurrent: args.data.concurrent
+                concurrent: args.data.concurrent,
+                maxExamsBeginnings: args.data.maxExamsBeginnings
             });
             schedule.save(callback);
         },
@@ -1049,7 +1058,8 @@ var db = {
                 inspector: args.data.inspector,
                 beginDate: args.data.beginDate,
                 endDate: args.data.endDate,
-                concurrent: args.data.concurrent
+                concurrent: args.data.concurrent,
+                maxExamsBeginnings: args.data.maxExamsBeginnings
             };
             var query = {
                 _id: args.scheduleId

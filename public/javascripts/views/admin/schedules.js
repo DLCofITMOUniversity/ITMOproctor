@@ -119,7 +119,12 @@ define([
                         formatter: this.formatDate.bind(this)
                     }, {
                         field: 'concurrent',
-                        title: i18n.t('admin.schedules.concurrent'),
+                        title: '<span title="' + i18n.t('admin.schedules.concurrentTooltip') +'">' + i18n.t('admin.schedules.concurrent') + '</span>',
+                        width: 75,
+                        sortable: true
+                    }, {
+                        field: 'maxExamsBeginnings',
+                        title: '<span title="' + i18n.t('admin.schedules.maxExamsBeginningsTooltip') +'">' + i18n.t('admin.schedules.maxExamsBeginnings') + '</span>',
                         width: 75,
                         sortable: true
                     }]
