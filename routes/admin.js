@@ -111,4 +111,32 @@ router.get('/examsStats', function(req, res) {
         }
     });
 });
+// Get schedules stats
+router.get('/schedulesStats', function(req, res) {
+    var args = {
+        data: req.query
+    };
+    db.stats.schedulesStats(args, function(err, interval, timetable, timetableTotal, examsBeginningsTotal, inspectors, exams) {
+        if (!err && timetable) {
+            res.json({
+                "interval": interval,
+                "timetable": timetable,
+                "timetableTotal": timetableTotal,
+                "examsBeginningsTotal": examsBeginningsTotal,
+                "inspectors": inspectors,
+                "exams": exams
+            });
+        }
+        else {
+            res.json({
+                "interval": 0,
+                "timetable": {},
+                "timetableTotal": {},
+                "examsBeginningsTotal": {},
+                "inspectors": {},
+                "exams": []
+            });
+        }
+    });
+});
 module.exports = router;

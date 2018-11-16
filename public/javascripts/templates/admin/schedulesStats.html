@@ -1,0 +1,14 @@
+<script type="text/template" id="main-tpl">
+<div style="padding:5px">
+    <input name="date-from" class="easyui-datebox date-from" style="width:110px;" data-options="prompt:'<%- i18n.t('admin.schedules.fromDatePrompt') %>'">
+    <input name="date-to" class="easyui-datebox date-to" style="width:110px;" data-options="prompt:'<%- i18n.t('admin.schedules.toDatePrompt') %>'">
+    <input name="text-search" class="easyui-searchbox text-search" style="width:300px;" data-options="prompt: '<%- i18n.t('admin.schedules.searchTextPrompt') %>'">
+</div>
+<div id="legend-chart"></div>
+<div id="schedules-charts-container"></div>
+</script>
+<script type="text/template" id="chart-tpl">
+<hr style="border:none;background:#bfbfbf;color:#bfbfbf;height:1px;">
+<h3 class="title" style="margin:5px 15px;font-size:14px;"><%- title %></h3>
+<div class="chart"></div>
+</script>

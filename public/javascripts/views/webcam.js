@@ -84,7 +84,7 @@ define([
                     iconCls: 'fa fa-microphone',
                     handler: function() {
                         self.buttonAudioState = !self.buttonAudioState;
-                        if (buttonAudioState) {
+                        if (self.buttonAudioState) {
                             $(this).attr('class', 'fa fa-microphone');
                         }
                         else {
@@ -96,7 +96,7 @@ define([
                     iconCls: 'fa fa-eye',
                     handler: function() {
                         self.buttonVideoState = !self.buttonVideoState;
-                        if (buttonVideoState) {
+                        if (self.buttonVideoState) {
                             $(this).attr('class', 'fa fa-eye');
                         }
                         else {

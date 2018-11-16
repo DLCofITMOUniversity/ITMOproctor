@@ -78,8 +78,7 @@ define([
                     to: dates.to,
                     text: self.$TextSearch.textbox('getValue').trim()
                 },
-                success: function(data){
-                    console.log(data);
+                success: function(data) {
                     self.$TotalExams.html(data.totalExams);
                     self.$TotalAccepted.html(data.totalAccepted);
                     self.$TotalIntercepted.html(data.totalIntercepted);
@@ -89,7 +88,7 @@ define([
         },
         openChart: function(data) {
             var chartData = [
-                  {
+                {
                     x: [i18n.t('admin.examsStats.totalExams')],
                     y: [data.totalExams],
                     type: 'bar'

@@ -673,9 +673,8 @@ var db = {
                         var endDate = moment(exams[i].endDate);
                         var start = beginDate.diff(leftDate, 'minutes') / interval;
                         var times = moment.min(rightDate, endDate).diff(beginDate, 'minutes', true) / interval;
-                        var j = start < 0 ? 0 : start;
-                        if (examsBeginnings[inspector] && examsBeginnings[inspector][j] > 0) examsBeginnings[inspector][j]--;
-                        for (var lj = start + times; j < lj; j++) {
+                        if (start >= 0 && examsBeginnings[inspector] && examsBeginnings[inspector][start] > 0) examsBeginnings[inspector][start]--;
+                        for (var j = start < 0 ? 0 : start, lj = start + times; j < lj; j++) {
                             if (timetable[inspector] && timetable[inspector][j] > 0) timetable[inspector][j]--;
                         }
                     }
@@ -934,6 +933,94 @@ var db = {
                         }
                     });
                     callback(err, totalExams, totalAccepted, totalIntercepted);
+                });
+            });
+        },
+        schedulesStats: function(args, callback) {
+            var Exam = require('./models/exam');
+            var Schedule = require('./models/schedule');
+            var interval = Number(config.get('schedule:interval'));
+            var leftDate = moment(args.data.from);
+            var rightDate = moment(args.data.to);
+            var text = args.data.text ? args.data.text : null;
+            var timetable = {};
+            var timetableTotal = {};
+            var examsBeginningsTotal = {};
+            var inspectors = {};
+            var optsSchedule = [{
+                path: 'inspector',
+                select: 'firstname lastname middlename'
+            }];
+            var props = ['inspector'];
+            Schedule.find({
+                '$and': [{
+                    beginDate: {
+                        '$lt': rightDate
+                    }
+                }, {
+                    endDate: {
+                        '$gt': leftDate
+                    }
+                }]
+            }).populate(optsSchedule).exec(function(err, data) {
+                if (err) return callback(err);
+                var schedules = data;
+                if (text && text != '') {
+                    schedules = db.utils.textSearch(data, text, props);
+                }
+                if (!schedules.length) return callback(err);
+                // формируем таблицу доступных рабочих интервалов каждого инспектора
+                for (var i = 0, li = schedules.length; i < li; i++) {
+                    var inspector = schedules[i].inspector._id;
+                    var beginDate = moment(schedules[i].beginDate);
+                    var endDate = moment(schedules[i].endDate);
+                    var concurrent = schedules[i].concurrent;
+                    var maxExamsBeginnings = schedules[i].maxExamsBeginnings;
+                    if (!timetable[inspector]) timetable[inspector] = [];
+                    if (!timetableTotal[inspector]) timetableTotal[inspector] = [];
+                    if (!examsBeginningsTotal[inspector]) examsBeginningsTotal[inspector] = [];
+                    var start = beginDate.diff(leftDate, 'minutes') / interval;
+                    var times = moment.min(rightDate, endDate).diff(beginDate, 'minutes', true) / interval;
+                    for (var j = start < 0 ? 0 : start, lj = start + times; j < lj; j++) {
+                        timetable[inspector][j] = [];
+                        if (timetableTotal[inspector][j]) timetableTotal[inspector][j] += concurrent;
+                        else timetableTotal[inspector][j] = concurrent;
+                        if (examsBeginningsTotal[inspector][j]) examsBeginningsTotal[inspector][j] += maxExamsBeginnings;
+                        else examsBeginningsTotal[inspector][j] = maxExamsBeginnings;
+                    }
+                    inspectors[inspector] = schedules[i].inspector;
+                }
+                //console.log(timetable);
+                var optsExam = [{
+                    path: 'student',
+                    select: 'firstname lastname middlename'
+                }];
+                Exam.find({
+                    '$and': [{
+                        beginDate: {
+                            '$lt': rightDate
+                        }
+                    }, {
+                        endDate: {
+                            '$gt': leftDate
+                        }
+                    }]
+                }).populate(optsExam).select('student inspector beginDate endDate').exec(function(err, exams) {
+                    if (err) return callback(err);
+                    // исключаем из таблицы уже запланированные экзамены
+                    for (var i = 0, li = exams.length; i < li; i++) {
+                        var inspector = exams[i].inspector;
+                        var beginDate = moment(exams[i].beginDate);
+                        var endDate = moment(exams[i].endDate);
+                        var start = beginDate.diff(leftDate, 'minutes') / interval;
+                        var times = moment.min(rightDate, endDate).diff(beginDate, 'minutes', true) / interval;
+                        for (var j = start < 0 ? 0 : start, lj = start + times; j < lj; j++) {
+                            if (timetable[inspector] && !timetable[inspector][j]) timetable[inspector][j] = [];
+                            if (timetable[inspector]) timetable[inspector][j].push(exams[i]._id);
+                        }
+                    }
+                    //console.log(timetable);
+                    callback(err, interval, timetable, timetableTotal, examsBeginningsTotal, inspectors, exams);
                 });
             });
         }

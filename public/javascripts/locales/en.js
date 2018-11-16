@@ -524,6 +524,14 @@ define({
             "totalAccepted": "Accepted",
             "totalIntercepted": "Intercepted"
         },
+        "schedulesStats": {
+            "title": "Schedule",
+            "tabTitle": "Schedules stats",
+            "concurrent": "Sessions",
+            "examsBeginnings": "Beginnings",
+            "textLegendWorkload": "Proctor schedule workload from 0% to 100%",
+            "textLegendWarning": "The number of concurrent sessions or the number of<br>beginning exams exceeds the maximum number"
+        },
         "about": {
             "title": "About",
             "app": "ITMOproctor",

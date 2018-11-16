@@ -524,6 +524,14 @@ define({
             "totalAccepted": "Принятых",
             "totalIntercepted": "Прерванных"
         },
+        "schedulesStats": {
+            "title": "Расписание",
+            "tabTitle": "Статистика по расписаниям",
+            "concurrent": "Сессии",
+            "examsBeginnings": "Старты",
+            "textLegendWorkload": "Загруженность расписания проктора от 0% до 100%",
+            "textLegendWarning": "Количество сеансов или количество одновременно начинающихся<br>экзаменов превышает максимальное количество"
+        },
         "about": {
             "title": "О системе",
             "app": "ITMOproctor",

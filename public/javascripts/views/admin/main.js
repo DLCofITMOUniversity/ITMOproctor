@@ -99,6 +99,10 @@ define([
                         id: 'examsStats',
                         text: i18n.t('admin.examsStats.title'),
                         tabText: i18n.t('admin.examsStats.tabTitle')
+                    }, {
+                        id: 'schedulesStats',
+                        text: i18n.t('admin.schedulesStats.title'),
+                        tabText: i18n.t('admin.schedulesStats.tabTitle')
                     }]
                 }, {
                     text: i18n.t('admin.help'),
