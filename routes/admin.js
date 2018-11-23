@@ -94,19 +94,23 @@ router.get('/examsStats', function(req, res) {
     var args = {
         data: req.query
     };
-    db.stats.examsStats(args, function(err, totalExams, totalAccepted, totalIntercepted) {
+    db.stats.examsStats(args, function(err, totalExams, totalPlanned, totalAccepted, totalIntercepted, totalMissed) {
         if (!err) {
             res.json({
                 "totalExams": totalExams,
+                "totalPlanned": totalPlanned,
                 "totalAccepted": totalAccepted,
-                "totalIntercepted": totalIntercepted
+                "totalIntercepted": totalIntercepted,
+                "totalMissed": totalMissed
             });
         }
         else {
             res.json({
                 "totalExams": 0,
+                "totalPlanned": 0,
                 "totalAccepted": 0,
-                "totalIntercepted": 0
+                "totalIntercepted": 0,
+                "totalMissed": 0
             });
         }
     });
@@ -135,6 +139,26 @@ router.get('/schedulesStats', function(req, res) {
                 "examsBeginningsTotal": {},
                 "inspectors": {},
                 "exams": []
+            });
+        }
+    });
+});
+// Get inspectors stats
+router.get('/inspectorsStats', function(req, res) {
+    var args = {
+        data: req.query
+    };
+    db.stats.inspectorsStats(args, function(err, data, count) {
+        if (!err && data) {
+            res.json({
+                "total": count,
+                "rows": data
+            });
+        }
+        else {
+            res.json({
+                "total": 0,
+                "rows": []
             });
         }
     });

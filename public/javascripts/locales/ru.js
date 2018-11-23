@@ -521,8 +521,10 @@ define({
             "title": "Экзамены",
             "tabTitle": "Статистика по экзаменам",
             "totalExams": "Всего экзаменов",
+            "totalPlanned": "Запланированных",
             "totalAccepted": "Принятых",
-            "totalIntercepted": "Прерванных"
+            "totalIntercepted": "Прерванных",
+            "totalMissed": "Пропущенных"
         },
         "schedulesStats": {
             "title": "Расписание",
@@ -531,6 +533,24 @@ define({
             "examsBeginnings": "Старты",
             "textLegendWorkload": "Загруженность расписания проктора от 0% до 100%",
             "textLegendWarning": "Количество сеансов или количество одновременно начинающихся<br>экзаменов превышает максимальное количество"
+        },
+        "inspectorsStats": {
+            "title": "Прокторы",
+            "tabTitle": "Статистика по прокторам",
+            "searchTextPrompt": "Поиск проктора...",
+            "fromDatePrompt": "Начало...",
+            "toDatePrompt": "Окончание...",
+            "inspector": "Проктор",
+            "totalTime": "Общее время",
+            "totalExams": "Всего экзаменов",
+            "totalPlanned": "Запланированных",
+            "totalAccepted": "Принятых",
+            "totalIntercepted": "Прерванных",
+            "totalMissed": "Пропущенных",
+            "totalTimeTooltip": "Общая длительность всех расписаний, ЧЧ:ММ",
+            "examsTooltip": "Количество экзаменов (общая длительность, ЧЧ:ММ)",
+            "inspectorProfile": "Профиль проктора",
+            "value": "%{exams} (%{time})"
         },
         "about": {
             "title": "О системе",

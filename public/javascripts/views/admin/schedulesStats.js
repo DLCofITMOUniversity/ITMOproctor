@@ -7,6 +7,9 @@ define([
 ], function(i18n, template) {
     console.log('views/admin/scheduleStats.js');
     var View = Backbone.View.extend({
+        events: {
+            "click .schedules-refresh-btn": "doRefresh"
+        },
         initialize: function() {
             var self = this;
             this.hourOffset = 5;
@@ -352,6 +355,9 @@ define([
         },
         getFullName: function(user) {
             return user.lastname + ' ' + user.firstname[0] + '. ' + (user.middlename ? (user.middlename[0] + '.') : '');
+        },
+        doRefresh: function(e) {
+            this.doSearch();
         }
     });
     return View;

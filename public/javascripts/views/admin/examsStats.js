@@ -91,20 +91,43 @@ define([
                 {
                     x: [i18n.t('admin.examsStats.totalExams')],
                     y: [data.totalExams],
+                    marker: {
+                        color: '#1f77b4'
+                    },
                     type: 'bar'
                 }, {
                     x: [i18n.t('admin.examsStats.totalAccepted')],
                     y: [data.totalAccepted],
+                    marker: {
+                        color: 'green'
+                    },
                     type: 'bar'
                 }, {
                     x: [i18n.t('admin.examsStats.totalIntercepted')],
                     y: [data.totalIntercepted],
+                    marker: {
+                        color: 'purple'
+                    },
+                    type: 'bar'
+                }, {
+                    x: [i18n.t('admin.examsStats.totalMissed')],
+                    y: [data.totalMissed],
+                    marker: {
+                        color: 'gray'
+                    },
+                    type: 'bar'
+                }, {
+                    x: [i18n.t('admin.examsStats.totalPlanned')],
+                    y: [data.totalPlanned],
+                    marker: {
+                        color: 'teal'
+                    },
                     type: 'bar'
                 }
             ];
             
             var layout = {
-                width: 400,
+                width: 650,
                 height: 400,
                 showlegend: false,
                 xaxis: {

@@ -521,8 +521,10 @@ define({
             "title": "Exams",
             "tabTitle": "Exams stats",
             "totalExams": "Total exams",
+            "totalPlanned": "Planned",
             "totalAccepted": "Accepted",
-            "totalIntercepted": "Intercepted"
+            "totalIntercepted": "Intercepted",
+            "totalMissed": "Missed"
         },
         "schedulesStats": {
             "title": "Schedule",
@@ -531,6 +533,24 @@ define({
             "examsBeginnings": "Beginnings",
             "textLegendWorkload": "Proctor schedule workload from 0% to 100%",
             "textLegendWarning": "The number of concurrent sessions or the number of<br>beginning exams exceeds the maximum number"
+        },
+        "inspectorsStats": {
+            "title": "Proctors",
+            "tabTitle": "Proctors stats",
+            "searchTextPrompt": "Search for a proctor...",
+            "fromDatePrompt": "From...",
+            "toDatePrompt": "To...",
+            "inspector": "Proctor",
+            "totalTime": "Total time",
+            "totalExams": "Total exams",
+            "totalPlanned": "Planned",
+            "totalAccepted": "Accepted",
+            "totalIntercepted": "Intercepted",
+            "totalMissed": "Missed",
+            "totalTimeTooltip": "Total duration of all schedules, HH:MM",
+            "examsTooltip": "Number of exams (total duration, HH:MM)",
+            "inspectorProfile": "Proctor profile",
+            "value": "%{exams} (%{time})"
         },
         "about": {
             "title": "About",

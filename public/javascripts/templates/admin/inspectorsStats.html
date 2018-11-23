@@ -1,0 +1,15 @@
+<script type="text/template" id="main-tpl">
+<table id="inspectors-grid" class="easyui-datagrid" data-options="toolbar:'#inspectors-toolbar',border:false,fitColumns:true,fit:true">
+<div id="inspectors-toolbar" style="padding-left:5px;">
+    <input name="date-from" class="easyui-datebox date-from" style="width:110px;" data-options="prompt:'<%- i18n.t('admin.inspectorsStats.fromDatePrompt') %>'">
+    <input name="date-to" class="easyui-datebox date-to" style="width:110px;" data-options="prompt:'<%- i18n.t('admin.inspectorsStats.toDatePrompt') %>'">
+    <input name="text-search" class="easyui-searchbox text-search" style="width:300px;" data-options="prompt: '<%- i18n.t('admin.inspectorsStats.searchTextPrompt') %>'">
+    <button class="easyui-linkbutton inspectors-refresh-btn" data-options="plain:true,iconCls:'fa fa-refresh'">
+    </button>
+</div>
+</script>
+<script type="text/template" id="inspector-item-tpl">
+<a href="javascript:void(0);" class="inspector-btn" data-id="<%- row.inspector._id %>" title="<%- i18n.t('admin.inspectorsStats.inspectorProfile') %>">
+    <%- row.inspector.lastname || i18n.t('user.unknown') %> <%- row.inspector.firstname %> <%- row.inspector.middlename %>
+</a>
+</script>

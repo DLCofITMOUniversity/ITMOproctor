@@ -103,6 +103,10 @@ define([
                         id: 'schedulesStats',
                         text: i18n.t('admin.schedulesStats.title'),
                         tabText: i18n.t('admin.schedulesStats.tabTitle')
+                    }, {
+                        id: 'inspectorsStats',
+                        text: i18n.t('admin.inspectorsStats.title'),
+                        tabText: i18n.t('admin.inspectorsStats.tabTitle')
                     }]
                 }, {
                     text: i18n.t('admin.help'),

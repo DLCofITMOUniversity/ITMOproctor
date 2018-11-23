@@ -876,6 +876,7 @@ var db = {
             var toDate = args.data.to ? moment(args.data.to) : null;
             var text = args.data.text ? args.data.text : null;
             var query = {};
+            var now = moment();
             // Dates
             if (fromDate && toDate) {
                 query = {
@@ -918,21 +919,29 @@ var db = {
                     if (text && text != "") {
                         exams = db.utils.textSearch(data, text, props);
                     }
-                    
                     var totalExams = exams.length;
+                    var totalPlanned = 0;
                     var totalAccepted = 0;
                     var totalIntercepted = 0;
-                    exams.forEach(function(element, index, array) {
-                        switch (element.resolution) {
-                            case true:
+                    var totalMissed = 0;
+                    exams.forEach(function(e) {
+                        var status = db.utils.getExamStatus(e, now);
+                        switch (status) {
+                            case 1:
+                                totalPlanned++;
+                                break;
+                            case 4:
                                 totalAccepted++;
                                 break;
-                            case false:
+                            case 5:
                                 totalIntercepted++;
+                                break;
+                            case 6:
+                                totalMissed++;
                                 break;
                         }
                     });
-                    callback(err, totalExams, totalAccepted, totalIntercepted);
+                    callback(err, totalExams, totalPlanned, totalAccepted, totalIntercepted, totalMissed);
                 });
             });
         },
@@ -968,7 +977,6 @@ var db = {
                 if (text && text != '') {
                     schedules = db.utils.textSearch(data, text, props);
                 }
-                if (!schedules.length) return callback(err);
                 // формируем таблицу доступных рабочих интервалов каждого инспектора
                 for (var i = 0, li = schedules.length; i < li; i++) {
                     var inspector = schedules[i].inspector._id;
@@ -994,6 +1002,9 @@ var db = {
                 var optsExam = [{
                     path: 'student',
                     select: 'firstname lastname middlename'
+                }, {
+                    path: 'inspector',
+                    select: 'firstname lastname middlename'
                 }];
                 Exam.find({
                     '$and': [{
@@ -1005,22 +1016,154 @@ var db = {
                             '$gt': leftDate
                         }
                     }]
-                }).populate(optsExam).select('student inspector beginDate endDate').exec(function(err, exams) {
+                }).populate(optsExam).select('student inspector beginDate endDate').exec(function(err, data) {
                     if (err) return callback(err);
+                    var exams = data;
+                    if (text && text != '') {
+                        exams = db.utils.textSearch(data, text, props);
+                    }
                     // исключаем из таблицы уже запланированные экзамены
                     for (var i = 0, li = exams.length; i < li; i++) {
-                        var inspector = exams[i].inspector;
+                        var inspector = exams[i].inspector._id;
                         var beginDate = moment(exams[i].beginDate);
                         var endDate = moment(exams[i].endDate);
                         var start = beginDate.diff(leftDate, 'minutes') / interval;
                         var times = moment.min(rightDate, endDate).diff(beginDate, 'minutes', true) / interval;
+                        if (!timetable[inspector]) {
+                            timetable[inspector] = [];
+                            timetableTotal[inspector] = [];
+                            examsBeginningsTotal[inspector] = [];
+                            for (var j = start < 0 ? 0 : start, lk = start + times; j < lk; j++) {
+                                timetable[inspector][j] = [];
+                                timetableTotal[inspector][j] = 0;
+                                examsBeginningsTotal[inspector][j] = 0;
+                            }
+                            inspectors[inspector] = exams[i].inspector;
+                        }
                         for (var j = start < 0 ? 0 : start, lj = start + times; j < lj; j++) {
-                            if (timetable[inspector] && !timetable[inspector][j]) timetable[inspector][j] = [];
-                            if (timetable[inspector]) timetable[inspector][j].push(exams[i]._id);
+                            if (!timetable[inspector][j]) timetable[inspector][j] = [];
+                            timetable[inspector][j].push(exams[i]._id);
                         }
                     }
                     //console.log(timetable);
+                    if (!Object.keys(timetable).length) return callback(err);
                     callback(err, interval, timetable, timetableTotal, examsBeginningsTotal, inspectors, exams);
+                });
+            });
+        },
+        inspectorsStats: function(args, callback) {
+            var Exam = require('./models/exam');
+            var Schedule = require('./models/schedule');
+            var fromDate = args.data.from ? moment(args.data.from) : null;
+            var toDate = args.data.to ? moment(args.data.to) : null;
+            var text = args.data.text ? args.data.text : null;
+            var examOffset = Number(config.get('schedule:examOffset'));
+            var query = {};
+            var inspectors = [];
+            var now = moment();
+            var getInspectorObj = function(id) {
+                return {
+                    inspector: id,
+                    totalTime: {
+                        duration: 0
+                    },
+                    totalExams: {
+                        duration: 0,
+                        num: 0
+                    },
+                    totalPlanned: {
+                        duration: 0,
+                        num: 0
+                    },
+                    totalAccepted: {
+                        duration: 0,
+                        num: 0
+                    },
+                    totalIntercepted: {
+                        duration: 0,
+                        num: 0
+                    },
+                    totalMissed: {
+                        duration: 0,
+                        num: 0
+                    }
+                };
+            };
+            if (fromDate && toDate) {
+                query.beginDate = {
+                    "$lte": toDate
+                };
+                query.endDate = {
+                    "$gte": fromDate
+                };
+            }
+            var opts = [{
+                path: 'inspector',
+                select: 'username firstname lastname middlename'
+            }];
+            var props = ["inspector"];
+            Schedule.find(query).sort('beginDate').populate(opts).exec(function(err, data) {
+                var schedules = data;
+                if (text && text != "") {
+                    schedules = db.utils.textSearch(data, text, props);
+                }
+                for (var i = 0, li = schedules.length; i < li; i++) {
+                    var inspector = schedules[i].inspector._id.toString();
+                    var beginDate = moment(schedules[i].beginDate);
+                    var endDate = moment(schedules[i].endDate);
+                    var concurrent = schedules[i].concurrent;
+                    var duration = endDate.diff(beginDate, 'minutes');
+                    var index = inspectors.findIndex(function(e) {
+                        return e.inspector._id.toString() === inspector;
+                    });
+                    if (index === -1) {
+                        inspectors.push(getInspectorObj(schedules[i].inspector));
+                        index = inspectors.length - 1;
+                    }
+                    inspectors[index].totalTime.duration += duration * concurrent;
+                }
+                //console.log(inspectors);
+                Exam.find(query).populate(opts).exec(function(err, data) {
+                    if (err) return callback(err);
+                    var exams = data;
+                    if (text && text != "") {
+                        exams = db.utils.textSearch(data, text, props);
+                    }
+                    for (var i = 0, li = exams.length; i < li; i++) {
+                        var inspector = exams[i].inspector._id.toString();
+                        var beginDate = moment(exams[i].beginDate);
+                        var endDate = moment(exams[i].endDate);
+                        var duration = endDate.diff(beginDate, 'minutes') + examOffset;
+                        var index = inspectors.findIndex(function(e) {
+                            return e.inspector._id.toString() === inspector;
+                        });
+                        if (index === -1) {
+                            inspectors.push(getInspectorObj(exams[i].inspector));
+                            index = inspectors.length - 1;
+                        }
+                        inspectors[index].totalExams.duration += duration;
+                        inspectors[index].totalExams.num++;
+                        var status = db.utils.getExamStatus(exams[i], now);
+                        switch (status) {
+                            case 1:
+                                inspectors[index].totalPlanned.duration += duration;
+                                inspectors[index].totalPlanned.num++;
+                                break;
+                            case 4:
+                                inspectors[index].totalAccepted.duration += duration;
+                                inspectors[index].totalAccepted.num++;
+                                break;
+                            case 5:
+                                inspectors[index].totalIntercepted.duration += duration;
+                                inspectors[index].totalIntercepted.num++;
+                                break;
+                            case 6:
+                                inspectors[index].totalMissed.duration += duration;
+                                inspectors[index].totalMissed.num++;
+                                break;
+                        }
+                    }
+                    callback(err, inspectors, inspectors.length);
                 });
             });
         }
@@ -1401,6 +1544,27 @@ var db = {
                 }
                 return statusArray.indexOf(status.toString()) !== -1;
             });
+        },
+        getExamStatus: function(data, currentTime) {
+            if (!data) return -1;
+            var now = currentTime || moment();
+            var status = 0;
+            if (data.rightDate) {
+                var rightDate = moment(data.rightDate);
+                if (rightDate <= now) status = 6;
+            }
+            if (data.beginDate && data.endDate) {
+                var beginDate = moment(data.beginDate);
+                var endDate = moment(data.endDate);
+                if (beginDate > now) status = 1;
+                if (endDate <= now) status = 6;
+                if (beginDate <= now && endDate > now) status = 2;
+                if (data.startDate) status = 3;
+                if (data.inspectorConnected === true) status = 7;
+                if (data.resolution === true) status = 4;
+                if (data.resolution === false) status = 5;
+            }
+            return status;
         }
     }
 };

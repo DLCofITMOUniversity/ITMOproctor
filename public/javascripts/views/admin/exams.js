@@ -170,6 +170,15 @@ define([
                     from: now.startOf('day').toJSON(),
                     to: now.startOf('day').add(1, 'days').toJSON(),
                     text: self.$TextSearch.textbox('getValue').trim()
+                },
+                onLoadSuccess: function(data) {
+                    if (!data.total) return;
+                    var now = moment();
+                    data.rows.forEach(function(row) {
+                        if (row.status) return;
+                        var status = self.getExamStatus(row, now);
+                        row.status = status;
+                    });
                 }
             });
             this.$Duration = this.$("#exams-duration");
@@ -293,26 +302,12 @@ define([
         processStatus: function(val, row) {
             var status = 0;
             if (val === undefined) {
-                var now = app.now();
-                if (row.rightDate) {
-                    var rightDate = moment(row.rightDate);
-                    if (rightDate <= now) status = 6;
-                }
-                if (row.beginDate && row.endDate) {
-                    var beginDate = moment(row.beginDate);
-                    var endDate = moment(row.endDate);
-                    if (beginDate > now) status = 1;
-                    if (endDate <= now) status = 6;
-                    if (beginDate <= now && endDate > now) status = 2;
-                    if (row.startDate) status = 3;
-                    if (row.inspectorConnected === true) status = 7;
-                    if (row.resolution === true) status = 4;
-                    if (row.resolution === false) status = 5;
-                }
+                var now = moment();
+                status = row.status ? row.status : this.getExamStatus(row, now);
             }
-            else {
+            else
                 status = isNaN(val) ? val : Number(val);
-            }
+            console.log(val, row, status)
             switch (status) {
                 case 'any':
                     return {
@@ -504,6 +499,27 @@ define([
                 function(r) {
                     if (r) self.removeRows(selected);
                 });
+        },
+        getExamStatus: function(data, currentTime) {
+            if (!data) return 0;
+            var now = currentTime || moment();
+            var status = 0;
+            if (data.rightDate) {
+                var rightDate = moment(data.rightDate);
+                if (rightDate <= now) status = 6;
+            }
+            if (data.beginDate && data.endDate) {
+                var beginDate = moment(data.beginDate);
+                var endDate = moment(data.endDate);
+                if (beginDate > now) status = 1;
+                if (endDate <= now) status = 6;
+                if (beginDate <= now && endDate > now) status = 2;
+                if (data.startDate) status = 3;
+                if (data.inspectorConnected === true) status = 7;
+                if (data.resolution === true) status = 4;
+                if (data.resolution === false) status = 5;
+            }
+            return status;
         },
         doExport: function() {
             var self = this;
