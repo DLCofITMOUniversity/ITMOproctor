@@ -5,13 +5,13 @@
     height: inherit;
     width: inherit;
 }
-.screen-output {
+.main {
     height: auto;
     width: auto;
     max-width: 100%;
     margin-bottom: 39px;
 }
-.webcam-output {
+.draggable {
     position: absolute;
     width: auto;
     height: auto;
@@ -28,12 +28,13 @@
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
     -webkit-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
     transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    z-index: 1;
 }
-.webcam-input {
+.hidden {
     visibility: hidden;
 }
 </style>
-<video class="screen-output" autoplay poster="images/webrtc.png"></video>
-<video class="webcam-output" autoplay poster="images/webrtc.png"></video>
-<video class="webcam-input" autoplay poster="images/webrtc.png"></video>
+<video class="screen-output main" autoplay poster="images/webrtc.png"></video>
+<video class="webcam-output draggable" autoplay poster="images/webrtc.png"></video>
+<video class="webcam-input hidden" autoplay poster="images/webrtc.png"></video>
 </script>

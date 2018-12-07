@@ -476,6 +476,7 @@ define({
             "durationMoreThanValue": "More than %{duration} min",
             "status": "Status",
             "anyStatus": "Any status",
+            "statusExcept0": "Except unplanned",
             "severalStatuses": "Several statuses",
             "durationValue": "%{duration} min",
             "play": "Exam protocol"

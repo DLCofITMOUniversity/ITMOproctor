@@ -237,7 +237,8 @@ define([
                 editable: false,
                 multiple: true,
                 data: [
-                    { label: 'any', value: i18n.t('admin.exams.anyStatus'), selected: true},
+                    { label: 'any', value: i18n.t('admin.exams.anyStatus'), selected: true },
+                    { label: 'except0', value: i18n.t('admin.exams.statusExcept0') },
                     { label: 0 },
                     { label: 1 },
                     { label: 2 },
@@ -253,13 +254,16 @@ define([
                 onSelect: function(newStatus) {
                     if (newStatus.label == 'any')
                         self.$Status.combobox('setValues', ['any']);
+                    else if (newStatus.label == 'except0')
+                        self.$Status.combobox('setValues', ['except0']);
                     else {
                         var values = self.$Status.combobox('getValues');
                         var index = values.indexOf('any');
-                        if (index >= 0) {
-                            values.splice(index, 1);
+                        var index2 = values.indexOf('except0');
+                        if (index >= 0) values.splice(index, 1);
+                        if (index2 >= 0) values.splice(index2, 1);
+                        if (index >= 0 || index2 >= 0)
                             self.$Status.combobox('setValues', values);
-                        }
                         if (values.length == 1)
                             self.$Status.textbox('setText', self.processStatus(values[0]).statusName);
                         else
@@ -271,7 +275,9 @@ define([
                     var values = self.$Status.combobox('getValues');
                     if (newStatus.label == 'any' || values.length === 0)
                         self.$Status.combobox('setValues', ['any']);
-                    else if (newStatus.label != 'any' && values.length == 1)
+                    else if (newStatus.label == 'except0')
+                        self.$Status.combobox('setValues', ['except0']);
+                    if (values.length == 1)
                         self.$Status.textbox('setText', self.processStatus(values[0]).statusName);
                     else
                         self.$Status.textbox('setText', i18n.t('admin.exams.severalStatuses'));
@@ -296,7 +302,13 @@ define([
         },
         getStatus: function() {
             var status = this.$Status.combobox('getValues');
-            status = status[0] != 'any' ? status.join(',') : null;
+            if (status[0] == 'any') status = [];
+            else if (status[0] == 'except0') {
+                status = [];
+                for (var i = 1; i < 7; i++)
+                    status.push(i);
+            }
+            status = status.join(',');
             return status;
         },
         processStatus: function(val, row) {
@@ -307,11 +319,15 @@ define([
             }
             else
                 status = isNaN(val) ? val : Number(val);
-            console.log(val, row, status)
             switch (status) {
                 case 'any':
                     return {
                         statusName: i18n.t('admin.exams.anyStatus'),
+                        color: 'black'
+                    }
+                case 'except0':
+                    return {
+                        statusName: i18n.t('admin.exams.statusExcept0'),
                         color: 'black'
                     }
                 case 0:

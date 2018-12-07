@@ -41,13 +41,13 @@ define([
                     iconCls: 'fa fa-clone',
                     handler: this.toggleVideo.bind(this)
                 }, {
-                    text: i18n.t('verify.acceptBtn'),
-                    iconCls: 'fa fa-check',
-                    handler: this.doAccept.bind(this)
-                }, {
                     text: i18n.t('verify.rejectBtn'),
                     iconCls: 'fa fa-times',
                     handler: this.doReject.bind(this)
+                }, {
+                    text: '<b>' + i18n.t('verify.acceptBtn') + '</b>',
+                    iconCls: 'fa fa-check',
+                    handler: this.doAccept.bind(this)
                 }],
                 onOpen: function() {
                     $(this).dialog('center');

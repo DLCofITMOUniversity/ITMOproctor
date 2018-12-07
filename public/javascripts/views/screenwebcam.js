@@ -45,26 +45,7 @@ define([
             this.screenOutput = this.$ScreenOutput.get(0);
             this.webcamOutput = this.$WebcamOutput.get(0);
             this.webcamInput = this.$WebcamInput.get(0);
-            this.$WebcamOutput.addClass('draggable');
-            this.$WebcamOutput.draggable({
-                onDrag: function(e) {
-                    var d = e.data;
-                    var parent = $(d.parent);
-                    var target = $(d.target);
-                    if (d.left < 0) {
-                        d.left = 0;
-                    }
-                    if (d.top < 0) {
-                        d.top = 0;
-                    }
-                    if (d.left + target.outerWidth() > parent.width()) {
-                        d.left = parent.width() - target.outerWidth();
-                    }
-                    if (d.top + target.outerHeight() > parent.height()) {
-                        d.top = parent.height() - target.outerHeight();
-                    }
-                }
-            });
+            this.makeDraggable(this.$('.draggable'), true);
             this.webcamWebcall.set({
                 input: this.webcamInput,
                 output: this.webcamOutput
@@ -119,6 +100,22 @@ define([
                             $(this).attr('class', 'fa fa-eye-slash');
                         }
                         self.updateMuteState();
+                    }
+                }, {
+                    iconCls: 'fa fa-retweet',
+                    handler: function() {
+                        if (self.$WebcamOutput.hasClass('draggable')) {
+                            self.$WebcamOutput.removeClass('draggable').addClass('main');
+                            self.$ScreenOutput.removeClass('main').addClass('draggable');
+                            self.makeDraggable(self.$WebcamOutput, false);
+                            self.makeDraggable(self.$ScreenOutput, true);
+                        }
+                        else {
+                            self.$ScreenOutput.removeClass('draggable').addClass('main');
+                            self.$WebcamOutput.removeClass('main').addClass('draggable');
+                            self.makeDraggable(self.$ScreenOutput, false);
+                            self.makeDraggable(self.$WebcamOutput, true);
+                        }
                     }
                 }]
             });
@@ -211,6 +208,34 @@ define([
         },
         getVideoState: function() {
             return this.webcamWebcall.video;
+        },
+        makeDraggable: function(el, state) {
+            if (state) {
+                el.draggable({
+                    onDrag: function(e) {
+                        var d = e.data;
+                        var parent = $(d.parent);
+                        var target = $(d.target);
+                        if (d.left < 0) {
+                            d.left = 0;
+                        }
+                        if (d.top < 0) {
+                            d.top = 0;
+                        }
+                        if (d.left + target.outerWidth() > parent.width()) {
+                            d.left = parent.width() - target.outerWidth();
+                        }
+                        if (d.top + target.outerHeight() > parent.height()) {
+                            d.top = parent.height() - target.outerHeight();
+                        }
+                    },
+                    disabled: false
+                });
+            }
+            else {
+                el.draggable({ disabled: true });
+                el.attr('style', '');
+            }
         },
         fixDraggablePosition: function() {
             if (!this.$WebcamOutput) return;

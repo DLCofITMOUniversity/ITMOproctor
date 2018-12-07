@@ -609,7 +609,7 @@ var db = {
                 });
             });
         },
-        schedule: function(args, callback) {
+        schedule: async function(args, callback) {
             var Exam = require('./models/exam');
             var Schedule = require('./models/schedule');
             var interval = Number(config.get('schedule:interval'));
@@ -619,11 +619,11 @@ var db = {
             var now = moment().add(offset, 'hours');
             var leftDate = moment.max(now, moment(args.data.leftDate));
             leftDate = leftDate.minutes(Math.floor(leftDate.minutes() / interval) * interval).startOf('minute');
-            var rightDate = moment(args.data.rightDate).add(interval, 'minutes');
-            rightDate = rightDate.minutes(Math.floor(rightDate.minutes() / interval) * interval).startOf('minute');
+            var rightDate = moment(args.data.rightDate);
+            rightDate = rightDate.minutes(Math.ceil(rightDate.minutes() / interval) * interval).startOf('minute');
             var timetable = {};
             var examsBeginnings = {};
-            Schedule.find({
+            var query = {
                 '$and': [{
                     beginDate: {
                         '$lt': rightDate
@@ -633,85 +633,79 @@ var db = {
                         '$gt': leftDate
                     }
                 }]
-            }).exec(function(err, schedules) {
-                if (err) return callback(err);
-                // формируем таблицу доступных рабочих интервалов каждого инспектора
-                for (var i = 0, li = schedules.length; i < li; i++) {
-                    var inspector = schedules[i].inspector;
-                    var beginDate = moment(schedules[i].beginDate);
-                    var endDate = moment(schedules[i].endDate);
-                    var concurrent = schedules[i].concurrent;
-                    var maxExamsBeginnings = schedules[i].maxExamsBeginnings;
-                    if (!timetable[inspector]) timetable[inspector] = [];
-                    if (!examsBeginnings[inspector]) examsBeginnings[inspector] = [];
-                    var start = beginDate.diff(leftDate, 'minutes') / interval;
-                    var times = moment.min(rightDate, endDate).diff(beginDate, 'minutes', true) / interval;
-                    for (var j = start < 0 ? 0 : start, lj = start + times; j < lj; j++) {
-                        if (timetable[inspector][j]) timetable[inspector][j] += concurrent;
-                        else timetable[inspector][j] = concurrent;
-                        if (examsBeginnings[inspector][j]) examsBeginnings[inspector][j] += maxExamsBeginnings;
-                        else examsBeginnings[inspector][j] = maxExamsBeginnings;
+            };
+            var queryResult = await Promise.all([
+                Schedule.find(query).select('inspector beginDate endDate concurrent maxExamsBeginnings'),
+                Exam.find(query).select('inspector beginDate endDate')
+            ]).catch(function(err) {
+                return err;
+            });
+            if (!queryResult.length) return callback(queryResult);
+            var schedules = queryResult[0];
+            var exams = queryResult[1];
+            // формируем таблицу доступных рабочих интервалов каждого инспектора
+            for (var i = 0, li = schedules.length; i < li; i++) {
+                var inspector = schedules[i].inspector;
+                var beginDate = moment(schedules[i].beginDate);
+                var endDate = moment(schedules[i].endDate);
+                var concurrent = schedules[i].concurrent;
+                var maxExamsBeginnings = schedules[i].maxExamsBeginnings;
+                if (!timetable[inspector]) timetable[inspector] = [];
+                if (!examsBeginnings[inspector]) examsBeginnings[inspector] = [];
+                var start = beginDate.diff(leftDate, 'minutes') / interval;
+                var times = moment.min(rightDate, endDate).diff(beginDate, 'minutes', true) / interval;
+                for (var j = start < 0 ? 0 : start, lj = start + times; j < lj; j++) {
+                    if (timetable[inspector][j]) timetable[inspector][j] += concurrent;
+                    else timetable[inspector][j] = concurrent;
+                    if (examsBeginnings[inspector][j]) examsBeginnings[inspector][j] += maxExamsBeginnings;
+                    else examsBeginnings[inspector][j] = maxExamsBeginnings;
+                }
+            }
+            //console.log(timetable);
+            // исключаем из таблицы уже запланированные экзамены
+            for (var i = 0, li = exams.length; i < li; i++) {
+                var inspector = exams[i].inspector;
+                var beginDate = moment(exams[i].beginDate);
+                var endDate = moment(exams[i].endDate);
+                var start = beginDate.diff(leftDate, 'minutes') / interval;
+                var times = moment.min(rightDate, endDate).diff(beginDate, 'minutes', true) / interval;
+                if (start >= 0 && examsBeginnings[inspector] && examsBeginnings[inspector][start] > 0) examsBeginnings[inspector][start]--;
+                for (var j = start < 0 ? 0 : start, lj = start + times; j < lj; j++) {
+                    if (timetable[inspector] && timetable[inspector][j] > 0) timetable[inspector][j]--;
+                }
+            }
+            //console.log(timetable);
+            // определяем доступные для записи интервалы с учетом duration
+            var intervals = [];
+            var inspectors = [];
+            for (var inspector in timetable) {
+                var arr = timetable[inspector];
+                var seq = 0;
+                var available = false;
+                for (var m = 0, lm = arr.length; m < lm; m++) {
+                    if (!arr[m] > 0) seq = 0;
+                    else if (++seq >= duration) {
+                        var n = (m + 1 - duration);
+                        if (examsBeginnings[inspector][n] <= 0) continue;
+                        intervals.push(n);
+                        available = true;
                     }
                 }
-                //console.log(timetable);
-                Exam.find({
-                    '$and': [{
-                        beginDate: {
-                            '$lt': rightDate
-                        }
-                    }, {
-                        endDate: {
-                            '$gt': leftDate
-                        }
-                    }]
-                }).exec(function(err, exams) {
-                    if (err) return callback(err);
-                    // исключаем из таблицы уже запланированные экзамены
-                    for (var i = 0, li = exams.length; i < li; i++) {
-                        var inspector = exams[i].inspector;
-                        var beginDate = moment(exams[i].beginDate);
-                        var endDate = moment(exams[i].endDate);
-                        var start = beginDate.diff(leftDate, 'minutes') / interval;
-                        var times = moment.min(rightDate, endDate).diff(beginDate, 'minutes', true) / interval;
-                        if (start >= 0 && examsBeginnings[inspector] && examsBeginnings[inspector][start] > 0) examsBeginnings[inspector][start]--;
-                        for (var j = start < 0 ? 0 : start, lj = start + times; j < lj; j++) {
-                            if (timetable[inspector] && timetable[inspector][j] > 0) timetable[inspector][j]--;
-                        }
-                    }
-                    //console.log(timetable);
-                    // определяем доступные для записи интервалы с учетом duration
-                    var intervals = [];
-                    var inspectors = [];
-                    for (var inspector in timetable) {
-                        var arr = timetable[inspector];
-                        var seq = 0;
-                        var available = false;
-                        for (var m = 0, lm = arr.length; m < lm; m++) {
-                            if (!arr[m] > 0) seq = 0;
-                            else if (++seq >= duration) {
-                                var n = (m + 1 - duration);
-                                if (examsBeginnings[inspector][n] <= 0) continue;
-                                intervals.push(n);
-                                available = true;
-                            }
-                        }
-                        if (available) inspectors.push(inspector);
-                    }
-                    //console.log(intervals);
-                    // сортируем, исключаем повторы и преобразуем в даты
-                    var dates = intervals.sort(function(a, b) {
-                        return a - b;
-                    }).filter(function(item, pos, arr) {
-                        return !pos || item != arr[pos - 1];
-                    }).map(function(v) {
-                        return moment(leftDate).add(v * interval, 'minutes');
-                    });
-                    //callback(null, dates);
-                    callback(null, {
-                        dates: dates,
-                        inspectors: inspectors
-                    });
-                });
+                if (available) inspectors.push(inspector);
+            }
+            //console.log(intervals);
+            // сортируем, исключаем повторы и преобразуем в даты
+            var dates = intervals.sort(function(a, b) {
+                return a - b;
+            }).filter(function(item, pos, arr) {
+                return !pos || item != arr[pos - 1];
+            }).map(function(v) {
+                return moment(leftDate).add(v * interval, 'minutes');
+            });
+            //callback(null, dates);
+            return callback(null, {
+                dates: dates,
+                inspectors: inspectors
             });
         },
         cancel: function(args, callback) {

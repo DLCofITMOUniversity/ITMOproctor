@@ -476,6 +476,7 @@ define({
             "durationMoreThanValue": "Более %{duration} мин.",
             "status": "Статус",
             "anyStatus": "Любой статус",
+            "statusExcept0": "Кроме незапланированных",
             "severalStatuses": "Несколько статусов",
             "durationValue": "%{duration} мин.",
             "play": "Протокол экзамена"
