@@ -1207,12 +1207,47 @@ var db = {
     schedule: {
         list: function(args, callback) {
             var Schedule = require('./models/schedule');
+            var Exam = require('./models/exam');
             Schedule.find({
                 inspector: args.userId,
                 endDate: {
                     '$gte': moment()
                 }
-            }).sort('beginDate').exec(callback);
+            }).sort('beginDate').exec(function(err, schedules) {
+                if (err) return callback(err);
+                if (schedules.length == 0) return callback(err, schedules);
+                Exam.find({
+                    inspector: args.userId,
+                    endDate: {
+                        '$gte': schedules[0].beginDate
+                    }
+                }).exec(function(err, exams) {
+                    if (err) return callback(err);
+                    var result = schedules.map(function(schedule) {
+                        var leftDate = Number(schedule.beginDate);
+                        var rightDate = Number(schedule.endDate);
+                        var canBeDeleted = !exams.some(function(exam) {
+                            var beginDate = Number(exam.beginDate);
+                            var endDate = Number(exam.endDate);
+                            return beginDate >= leftDate && beginDate <= rightDate || endDate >= leftDate && endDate <= rightDate;
+                        });
+                        var canBeDivided = canBeDeleted ? false : !exams.some(function(exam) {
+                            return Number(exam.beginDate) <= leftDate && Number(exam.endDate) >= rightDate;
+                        });
+                        return {
+                            _id: schedule._id,
+                            inspector: schedule.inspector,
+                            beginDate: schedule.beginDate,
+                            endDate: schedule.endDate,
+                            concurrent: schedule.concurrent,
+                            maxExamsBeginnings: schedule.maxExamsBeginnings,
+                            canBeDivided: canBeDivided,
+                            canBeDeleted: canBeDeleted
+                        };
+                    });
+                    callback(err, result);
+                });
+            });
         },
         search: function(args, callback) {
             var rows = args.data.rows ? Number(args.data.rows) : 0;
@@ -1297,11 +1332,52 @@ var db = {
         },
         remove: function(args, callback) {
             var Schedule = require('./models/schedule');
+            var withoutDivision = args.data && args.data.withoutDivision === 'true';
             var query = {
                 _id: args.scheduleId
             };
             if (args.userId) query.inspector = args.userId;
-            Schedule.findOneAndRemove(query, callback);
+            if (withoutDivision) {
+                Schedule.findOneAndRemove(query, callback);
+                return;
+            }
+            Schedule.findOne(query).exec(function(err, schedule) {
+                if (err) return callback(err);
+                var leftDate = moment(schedule.beginDate);
+                var rightDate = moment(schedule.endDate);
+                var Exam = require('./models/exam');
+                Exam.find({
+                    inspector: schedule.inspector,
+                    '$and': [{
+                        beginDate: {
+                            '$lt': rightDate
+                        }
+                    }, {
+                        endDate: {
+                            '$gt': leftDate
+                        }
+                    }]
+                }).exec(function(err, exams) {
+                    if (err) return callback(err);
+                    var canBeDivided = !exams.some(function(exam) {
+                        return Number(exam.beginDate) <= Number(schedule.beginDate) && Number(exam.endDate) >= Number(schedule.endDate);
+                    });
+                    if (!canBeDivided) return callback();
+                    exams.forEach(function(exam) {
+                        var beginDate = moment.max(leftDate, moment(exam.beginDate));
+                        var endDate = moment.min(rightDate, moment(exam.endDate));
+                        var newSchedule = new Schedule({
+                            inspector: schedule.inspector,
+                            beginDate: beginDate,
+                            endDate: endDate,
+                            concurrent: 1,
+                            maxExamsBeginnings: 1
+                        });
+                        newSchedule.save();
+                    });
+                    Schedule.findOneAndRemove(query, callback);
+                });
+            });
         }
     },
     notes: {

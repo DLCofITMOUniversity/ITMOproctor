@@ -305,7 +305,7 @@ define([
             if (status[0] == 'any') status = [];
             else if (status[0] == 'except0') {
                 status = [];
-                for (var i = 1; i < 7; i++)
+                for (var i = 1; i <= 7; i++)
                     status.push(i);
             }
             status = status.join(',');
@@ -459,9 +459,12 @@ define([
         doPlay: function(e) {
             var element = e.currentTarget;
             var examId = $(element).attr('data-id');
+            var index = $(element).closest('tr').attr('datagrid-row-index');
+            var student = this.$Grid.datagrid('getData').rows[index].student;
+            var fullName = student.lastname + ' ' + student.firstname[0] + '. ' + (student.middlename ? (student.middlename[0] + '.') : '')
             this.options.parent.renderTab({
                 id: 'play',
-                text: i18n.t('play.title'),
+                text: i18n.t('play.title') + ' - ' + fullName + '<span style="display:none">' + examId + '</span>',
                 params: {
                     examId: examId
                 }

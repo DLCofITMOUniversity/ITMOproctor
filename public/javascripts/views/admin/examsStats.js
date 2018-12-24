@@ -7,6 +7,9 @@ define([
 ], function(i18n, template) {
     console.log('views/admin/examStats.js');
     var View = Backbone.View.extend({
+        events: {
+            "click .exams-refresh-btn": "doRefresh"
+        },
         initialize: function() {
             // Templates
             this.templates = _.parseTemplate(template);
@@ -25,6 +28,7 @@ define([
             };
             this.$el.html(tpl(data));
             $.parser.parse(this.$el);
+            this.$ExamsChart = this.$('#exams-chart');
 
             // Event handlers
             this.$FromDate = this.$(".date-from");
@@ -71,6 +75,7 @@ define([
         doSearch: function() {
             var self = this;
             var dates = this.getDates();
+            this.$ExamsChart.text(i18n.t('loading'));
             $.ajax({
                 url: "admin/examsStats",
                 data: {
@@ -87,6 +92,7 @@ define([
             });
         },
         openChart: function(data) {
+            this.$ExamsChart.empty();
             var chartData = [
                 {
                     x: [i18n.t('admin.examsStats.totalExams')],
@@ -145,6 +151,9 @@ define([
                 }
             };
             Plotly.newPlot('exams-chart', chartData, layout, {displayModeBar: false, staticPlot: true});
+        },
+        doRefresh: function(e) {
+            this.doSearch();
         }
     });
     return View;

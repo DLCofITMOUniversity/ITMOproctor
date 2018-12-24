@@ -220,9 +220,16 @@ define([
             var selected = this.$Grid.datagrid('getSelected');
             var disabled = this.$StartBtn.linkbutton('options').disabled;
             if (selected && !disabled) {
-                app.router.navigate("talk/" + selected._id, {
-                    trigger: true
-                });
+                var beginDate = moment(selected.beginDate);
+                var endDate = moment(selected.endDate);
+                var now = app.now();
+                if (beginDate <= now && !selected.stopDate &&
+                    (endDate > now || selected.startDate)) {
+                    app.router.navigate("talk/" + selected._id, {
+                        trigger: true
+                    });
+                }
+                else this.refreshTable();
             }
         },
         doPlan: function() {

@@ -3,9 +3,10 @@
     <input name="date-from" class="easyui-datebox date-from" style="width:110px;" data-options="prompt:'<%- i18n.t('admin.exams.fromDatePrompt') %>'">
     <input name="date-to" class="easyui-datebox date-to" style="width:110px;" data-options="prompt:'<%- i18n.t('admin.exams.toDatePrompt') %>'">
     <input name="text-search" class="easyui-searchbox text-search" style="width:300px;" data-options="prompt: '<%- i18n.t('admin.exams.searchTextPrompt') %>'">
+    <button class="easyui-linkbutton exams-refresh-btn" data-options="plain:true,iconCls:'fa fa-refresh'"></button>
     <p><%- i18n.t('admin.examsStats.totalExams') %>: <span id="total-exams"></span></p>
     <p><%- i18n.t('admin.examsStats.totalAccepted') %>: <span id="total-accepted"></span></p>
     <p><%- i18n.t('admin.examsStats.totalIntercepted') %>: <span id="total-intercepted"></span></p>
 </div>
-<div id="exams-chart"></div>
+<div id="exams-chart" style="padding: 5px"></div>
 </script>

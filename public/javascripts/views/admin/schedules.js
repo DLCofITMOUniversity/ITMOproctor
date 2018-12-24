@@ -199,7 +199,7 @@ define([
             };
             this.view.scheduleEditor.doOpen(null, callback);
         },
-        removeRows: function(rows) {
+        removeRows: function(rows, withoutDivision) {
             var self = this;
             var User = Backbone.Model.extend({
                 urlRoot: 'schedule'
@@ -212,13 +212,26 @@ define([
                 });
             rows.forEach(function(row, i, arr) {
                 _.defer(function() {
-                    var user = new User({
-                        _id: row._id
-                    });
-                    user.destroy({
-                        success: onProgress,
-                        error: onProgress
-                    });
+                    if (withoutDivision) {
+                        $.ajax({
+                            type: 'delete',
+                            url: 'schedule/' + row._id,
+                            data: {
+                                withoutDivision: true
+                            },
+                            success: onProgress,
+                            error: onProgress
+                        });
+                    }
+                    else {
+                        var user = new User({
+                            _id: row._id
+                        });
+                        user.destroy({
+                            success: onProgress,
+                            error: onProgress
+                        });
+                    }
                 });
             });
         },
@@ -226,11 +239,28 @@ define([
             var selected = this.$Grid.datagrid('getSelections');
             if (!selected.length) return;
             var self = this;
-            $.messager.confirm(i18n.t('admin.remove.confirm.title'),
-                i18n.t('admin.remove.confirm.message'),
-                function(r) {
-                    if (r) self.removeRows(selected);
-                });
+            var dlg = $.messager.confirm({
+                title: i18n.t('admin.remove.confirm.title'),
+                msg: i18n.t('admin.remove.confirm.schedulesMessage'),
+                buttons:[{
+                    text: i18n.t('admin.remove.confirm.removeBtn'),
+                    onClick: function() {
+                        self.removeRows(selected, true);
+                        dlg.dialog('close');
+                    }
+                }, {
+                    text: i18n.t('admin.remove.confirm.divideBtn'),
+                    onClick: function() {
+                        self.removeRows(selected, false);
+                        dlg.dialog('close');
+                    }
+                }, {
+                    text: i18n.t('admin.remove.confirm.cancelBtn'),
+                    onClick: function() {
+                        dlg.dialog('close');
+                    }
+                }]
+            });
         }
     });
     return View;

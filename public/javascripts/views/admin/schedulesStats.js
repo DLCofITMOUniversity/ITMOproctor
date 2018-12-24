@@ -101,6 +101,7 @@ define([
         doSearch: function() {
             var self = this;
             var dates = this.getDates();
+            this.$SchedulesChartsContainer.text(i18n.t('loading'));
             $.ajax({
                 url: "admin/schedulesStats",
                 data: {
@@ -110,6 +111,10 @@ define([
                 },
                 success: function(data) {
                     self.openCharts(data);
+                    $.messager.progress('close');
+                },
+                error: function(data) {
+                    $.messager.progress('close');
                 }
             });
         },
@@ -183,7 +188,10 @@ define([
         },
         openCharts: function(data) {
             this.$SchedulesChartsContainer.empty();
-            if (!Object.keys(data).length || !data.interval) return;
+            if (!Object.keys(data).length || !data.interval) {
+                this.$SchedulesChartsContainer.text(i18n.t('admin.schedulesStats.notFound'));
+                return;
+            }
             var self = this;
             var dates = this.getDates();
             var days = moment(dates.to).diff(moment(dates.from), 'days');
@@ -195,6 +203,13 @@ define([
             var intervalsPerDay = 24 * 60 / interval;
             var baseOffset = this.hourOffset * 60;
             var barHeight = 40;
+            var now = moment();
+
+            var insIds = Object.keys(data.timetable).sort(function(insId1, insId2) {
+                var fa = self.getFullName(data.inspectors[insId1]);
+                var fb = self.getFullName(data.inspectors[insId2]);
+                return fa.localeCompare(fb);
+            });
 
             for (var day = 0; day < days; day++) {
                 var counter = 0;
@@ -217,7 +232,8 @@ define([
                 };
                 var minHour = leftHour;
                 var maxHour = rightHour;
-                for (var insId in data.timetable) {
+                for (var insIdIndex in insIds) {
+                    var insId = insIds[insIdIndex];
                     var insTimetable = data.timetable[insId];
                     var inspector = data.inspectors[insId];
                     var inspectorName = this.getFullName(inspector);
@@ -240,7 +256,7 @@ define([
                         var concurrentTotal = data.timetableTotal[insId][i] || 0;
                         if (insTimetable[i - 1]) {
                             var examsBeginnings = insTimetable[i].reduce(function(res, examId) {
-                                return res + (insTimetable[i - 1].includes(examId) ? 0 : 1);
+                                return res + (insTimetable[i - 1].indexOf(examId) > -1 ? 0 : 1);
                             }, 0);
                         }
                         else {
@@ -302,6 +318,26 @@ define([
                     ticktext.push((i / 60 == hours) ? (hours % 24 + ':00') : '');
                 }
 
+                var shapes = [];
+                if (templateData.title == now.format('DD.MM.YYYY')) {
+                    var minutes = now.hours() * 60 + now.minutes();
+                    if (minutes > minHour * 60 && minutes < maxHour * 60) {
+                        shapes.push({
+                            type: 'line',
+                            line: {
+                                color: 'blue',
+                                width: 1.5
+                            },
+                            xref: 'x',
+                            yref: 'paper',
+                            x0: minutes,
+                            x1: minutes,
+                            y0: 0,
+                            y1: 1
+                        });
+                    }
+                }
+
                 var layout = {
                     barmode: 'stack',
                     showlegend: false,
@@ -325,7 +361,8 @@ define([
                         r: 50,
                         b: 30,
                         l: 120
-                    }
+                    },
+                    shapes: shapes
                 };
                 layout.height = counter * barHeight + layout.margin.t + layout.margin.b;
                 Plotly.newPlot(chart[0], [chartData], layout, { displayModeBar: false });

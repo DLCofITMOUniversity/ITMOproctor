@@ -228,7 +228,11 @@ define({
         "beginDate": "Start date",
         "endDate": "End date",
         "unknown": "Unknown",
-        "inspector": "Proctor"
+        "inspector": "Proctor",
+        "confirm": "Confirmation",
+        "error": "Error",
+        "divideMessage": "This schedule cannot be removed completely, because exams are planned for it.<br><br>Do you want to divide it into exams?",
+        "errorMessage": "This schedule cannot be removed, because exams are planned for it"
     },
     "monitor": {
         "title": "Exams schedule",
@@ -533,7 +537,8 @@ define({
             "concurrent": "Sessions",
             "examsBeginnings": "Beginnings",
             "textLegendWorkload": "Proctor schedule workload from 0% to 100%",
-            "textLegendWarning": "The number of concurrent sessions or the number of<br>beginning exams exceeds the maximum number"
+            "textLegendWarning": "The number of concurrent sessions or the number of<br>beginning exams exceeds the maximum number",
+            "notFound": "No schedules were found for the selected period"
         },
         "inspectorsStats": {
             "title": "Proctors",
@@ -569,7 +574,11 @@ define({
             "progressMsg": "Removing data...",
             "confirm": {
                 "title": "Confirmation",
-                "message": "Are you sure you want to remove the selected records?"
+                "message": "Are you sure you want to remove the selected records?",
+                "schedulesMessage": "Are you sure you want to remove the selected records?<br><br>Choose action: remove completely or divide into exams",
+                "removeBtn": "Remove",
+                "divideBtn": "Divide",
+                "cancelBtn": "Cancel"
             }
         },
         "profile": "Profile",

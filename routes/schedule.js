@@ -37,6 +37,7 @@ router.put('/:scheduleId', function(req, res) {
 router.delete('/:scheduleId', function(req, res) {
     var args = {
         scheduleId: req.params.scheduleId,
+        data: req.body
     };
     db.schedule.remove(args, function(err, data) {
         if (!err && data) res.json(data);

@@ -55,7 +55,19 @@ define([
                         var selected = self.$Grid.datagrid('getSelected');
                         if (selected) {
                             var index = self.$Grid.datagrid('getRowIndex', selected);
-                            self.$Grid.datagrid('deleteRow', index);
+                            if (selected.canBeDeleted) {
+                                self.$Grid.datagrid('deleteRow', index);
+                            }
+                            else if (selected.canBeDivided) {
+                                $.messager.confirm(i18n.t('schedule.confirm'),
+                                    i18n.t('schedule.divideMessage'),
+                                    function(r) {
+                                        if (r) self.$Grid.datagrid('deleteRow', index);
+                                    });
+                            }
+                            else {
+                                $.messager.alert(i18n.t('schedule.error'), i18n.t('schedule.errorMessage'));
+                            }
                         }
                     }
                 }, {
