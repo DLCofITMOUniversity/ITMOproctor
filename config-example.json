@@ -86,5 +86,22 @@
                 "delete": true
             }
         }
+    },
+    "bots": {
+        "enable": false,
+        "delay": 120,
+        "lang": "ru",
+        "telegram": {
+            "enable": false,
+            "token": "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11",
+            "chatId": "-1234567890123",
+            "useProxy": false,
+            "proxy": {
+                "socksHost": "host",
+                "socksPort": 1080,
+                "socksUsername": "username",
+                "socksPassword": "password"
+            }
+        }
     }
 }

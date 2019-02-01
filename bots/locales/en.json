@@ -1,0 +1,10 @@
+{
+    "bots": {
+        "inspectorConnected": "Proctor %{inspector} connected to the exam of student %{student}",
+        "studentsWaiting": "Students awaiting proctors connection:",
+        "studentWaiting": "\n%{n}. %{student} (waiting more than %{time}, exam start — %{beginDate}, proctor — %{inspector})",
+        "minutes": "%{num} min",
+        "seconds": "%{num} sec",
+        "unknown": "Unknown"
+    }
+}

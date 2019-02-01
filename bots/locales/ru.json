@@ -1,0 +1,10 @@
+{
+    "bots": {
+        "inspectorConnected": "Проктор %{inspector} подключился к экзамену студента %{student}",
+        "studentsWaiting": "Студенты, ожидающие подключения прокторов:",
+        "studentWaiting": "\n%{n}. %{student} (ожидание более %{time}, начало экзамена — %{beginDate}, проктор — %{inspector})",
+        "minutes": "%{num} мин.",
+        "seconds": "%{num} сек.",
+        "unknown": "Неизвестный"
+    }
+}

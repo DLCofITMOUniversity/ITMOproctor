@@ -8,6 +8,7 @@ var moment = require('moment');
 var fs = require('fs');
 var path = require('path');
 var crypto = require('crypto');
+var bots = require('../bots');
 var db = {
     geoip: function(ip) {
         var geoip = require('geoip-lite');
@@ -797,17 +798,19 @@ var db = {
                 select: 'firstname lastname middlename'
             }];
             var Exam = require('./models/exam');
-            Exam.findById(args.examId).exec(function(err, exam) {
+            Exam.findById(args.examId).populate(opts).exec(function(err, exam) {
                 if (err || !exam) return callback(err);
                 var query = {};
-                if (!exam.startDate && exam.student == args.userId) {
+                if (!exam.startDate && exam.student._id == args.userId) {
                     query.startDate = moment();
+                    bots.studentConnected(exam);
                 }
-                if (!exam.inspector && exam.student != args.userId) {
+                if (!exam.inspector && exam.student._id != args.userId) {
                     query.inspector = args.userId;
                 }
-                if (!exam.inspectorConnected && exam.inspector == args.userId) {
+                if (!exam.inspectorConnected && (exam.inspector && exam.inspector._id == args.userId || query.inspector == args.userId)) {
                     query.inspectorConnected = true;
+                    bots.inspectorConnected(exam);
                 }
                 if (!query) return callback();
                 Exam.findByIdAndUpdate(args.examId, {
@@ -815,7 +818,6 @@ var db = {
                 }, {
                     'new': true
                 }).populate(opts).exec(callback);
-
             });
         },
         finish: function(args, callback) {
