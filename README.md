@@ -52,25 +52,6 @@
 * [Структурная схема системы](https://drive.google.com/file/d/0B7YdZbqVWxzeSlFWZUl4S1RiaVE/view?usp=sharing)
 * [Диаграмма взаимодействия компонентов системы](https://drive.google.com/file/d/0B7YdZbqVWxzeRVVBanVFWlVNQ2M/view?usp=sharing)
 
-#### Запуск серверной части через Vagrant
-
-Необходимо установить:
-
-* [VirtualBox](https://www.virtualbox.org/)
-* [Vagrant](https://www.vagrantup.com/downloads.html)
-
-Выполнить команды для запуска бокса:
-```
-mkdir ~/itmoproctor
-cd ~/itmoproctor
-vagrant init itmo/itmoproctor
-vagrant up
-vagrant ssh
-```
-Веб-интерфейс на хост-машине: [localhost:3001](http://localhost:3001)
-
-На гостевой машине: [localhost:3000](http://localhost:3000)
-
 #### Развертывание системы на Ubuntu 14.04
 
 Установить MongoDB:
