@@ -61,7 +61,7 @@ var checkExams = function() {
     for (var i = currentExams.length - 1; i >= 0; i--) {
         var exam = currentExams[i];
         var startDate = moment(exam.startDate);
-        var endDate = moment(exam.endDate);
+        var endDate = moment(exam.endDate).add(delay, 'seconds');
         var seconds = now.diff(startDate, 'seconds');
         if (exam.inspectorConnected && seconds < delay || endDate <= now) {
             currentExams.splice(i, 1);

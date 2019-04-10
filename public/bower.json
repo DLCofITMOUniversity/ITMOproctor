@@ -17,7 +17,7 @@
   ],
   "dependencies": {
     "webrtc-adapter": "adapter.js#~0.2.9",
-    "kurento-utils": "~6.2.0",
+    "kurento-utils": "~6.7.0",
     "moment": "~2.11.2",
     "font-awesome": "~4.5.0",
     "jquery": "~1.11.3",

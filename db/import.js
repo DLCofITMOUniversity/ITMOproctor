@@ -11,7 +11,7 @@ if (process.argv.length !== 3) {
     process.exit(1);
 }
 
-mongoose.connect(config.get('mongoose:uri'));
+mongoose.connect(config.get('mongoose:uri'), { useNewUrlParser: true });
 var conn = mongoose.connection;
 conn.on('error', function(err) {
     console.error("MongoDB connection error:", err.message);
