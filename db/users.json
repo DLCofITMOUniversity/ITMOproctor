@@ -2,7 +2,6 @@
     "user": [{
         "username": "inspector1",
         "password": "inspector1",
-        "salt": "secret",
         "lastname": "Петров",
         "firstname": "Петр",
         "middlename": "Петрович",
@@ -18,7 +17,6 @@
     }, {
         "username": "inspector2",
         "password": "inspector2",
-        "salt": "secret",
         "lastname": "Смирнова",
         "firstname": "Евгения",
         "middlename": "Владимировна",
@@ -34,7 +32,6 @@
     }, {
         "username": "inspector3",
         "password": "inspector3",
-        "salt": "secret",
         "lastname": "Иванова",
         "firstname": "Евгения",
         "middlename": "Александровна",
@@ -50,7 +47,6 @@
     }, {
         "username": "inspector4",
         "password": "inspector4",
-        "salt": "secret",
         "lastname": "Петров",
         "firstname": "Иван",
         "middlename": "Петрович",
@@ -66,7 +62,6 @@
     }, {
         "username": "inspector5",
         "password": "inspector5",
-        "salt": "secret",
         "lastname": "Иванов",
         "firstname": "Иван",
         "middlename": "Петрович",
@@ -82,7 +77,6 @@
     }, {
         "username": "student1",
         "password": "student1",
-        "salt": "secret",
         "lastname": "Иванов",
         "firstname": "Александр",
         "middlename": "Иванович",
@@ -99,7 +93,6 @@
     }, {
         "username": "student2",
         "password": "student2",
-        "salt": "secret",
         "lastname": "Попов",
         "firstname": "Сергей",
         "middlename": "Иванович",
@@ -112,7 +105,6 @@
     }, {
         "username": "student3",
         "password": "student3",
-        "salt": "secret",
         "lastname": "Иванов",
         "firstname": "Сергей",
         "middlename": "Иванович",
@@ -125,7 +117,6 @@
     }, {
         "username": "student4",
         "password": "student4",
-        "salt": "secret",
         "lastname": "Попов",
         "firstname": "Александр",
         "middlename": "Иванович",
@@ -138,7 +129,6 @@
     }, {
         "username": "student5",
         "password": "student5",
-        "salt": "secret",
         "lastname": "Попов",
         "firstname": "Иван",
         "middlename": "Сергеевич",
@@ -151,8 +141,7 @@
     }, {
         "username": "admin",
         "password": "admin",
-        "salt": "secret",
-        "lastname": "Админинстратор",
+        "lastname": "Администратор",
         "firstname": "Системы",
         "middlename": "",
         "gender": "male",

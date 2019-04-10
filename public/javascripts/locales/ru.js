@@ -169,7 +169,6 @@ define({
         "documentType": "Тип документа",
         "documentTypePrompt": "Тип документа",
         "documentTypes": {
-            "null": "Не выбран",
             "passport": "Паспорт",
             "internationalPassport": "Заграничный паспорт",
             "foreignDocument": "Иностранный документ",
@@ -585,7 +584,6 @@ define({
         "logout": "Выход"
     },
     "countries": {
-        "null": "Не выбрано",
         "ABH": "Абхазия",
         "AUS": "Австралия",
         "AUT": "Австрия",

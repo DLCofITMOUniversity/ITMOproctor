@@ -100,6 +100,8 @@ define([
                 }),
                 examAdding: new ExamAdding()
             };
+            // Audio notification
+            this.audio = new Audio('sounds/alert.ogg');
             // Window events
             this.messageEventHandler = function(event) {
                 var message = event.data;
@@ -164,8 +166,14 @@ define([
                 self.$NetworkWidget.html(i18n.t('multivision.offline'));
                 self.$NetworkWidget.css('color', 'red');
             };
+            this.newExamNotification = function(data) {
+                if (!data || !data.inspector || !app.isMe(data.inspector._id) || data.inspectorConnected) return;
+                self.audio.play();
+                self.$NewExamNotification.show();
+            };
             app.io.notify.on('connect', this.connectHandler);
             app.io.notify.on('disconnect', this.disconnectHandler);
+            app.io.notify.on('exam', this.newExamNotification);
             // Timers
             var t1 = setInterval(function() {
                 if (!self.exam) return;
@@ -211,6 +219,7 @@ define([
             this.$MembersContainer = this.$('#members-container');
             this.$NotesContainer = this.$('#notes-container');
             this.$ChatContainer = this.$('#chat-container');
+            this.$NewExamNotification = this.$('.new-exam-notification');
             // Event handlers
             this.$Menu.menu({
                 onClick: function(item) {
@@ -287,6 +296,7 @@ define([
             window.removeEventListener('hashchange', this.hashchangeEventHandler);
             app.io.notify.removeListener('connect', this.connectHandler);
             app.io.notify.removeListener('disconnect', this.disconnectHandler);
+            app.io.notify.removeListener('exam', this.newExamNotification);
             this.remove();
         },
         openVision: function(examId) {
@@ -590,6 +600,7 @@ define([
             this.$VideoContainer.find('.panel-videoblock[data-id="' + data.examId + '"] .new-notification').show();
         },
         doAdd: function() {
+            this.$NewExamNotification.hide();
             this.view.examAdding.doOpen();
         },
         doVerify: function() {

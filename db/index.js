@@ -1,7 +1,7 @@
 var logger = require('../common/logger');
 var mongoose = require('mongoose');
 var config = require('nconf');
-mongoose.connect(config.get('mongoose:uri'));
+mongoose.connect(config.get('mongoose:uri'), { useNewUrlParser: true });
 var conn = mongoose.connection;
 var Grid = require('gridfs-stream');
 var moment = require('moment');
@@ -1565,7 +1565,7 @@ var db = {
                 }
                 return result;
             };
-            var phrases = text.toLowerCase().split(' ');
+            var phrases = text.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&').split(' ');
             var rows = [];
             for (var i = 0, li = data.length; i < li; i++) {
                 var str = objectToString(JSON.parse(JSON.stringify(data[i]))).toLowerCase();

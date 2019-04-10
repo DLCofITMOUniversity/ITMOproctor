@@ -169,7 +169,6 @@ define({
         "documentType": "Document type",
         "documentTypePrompt": "Document type",
         "documentTypes": {
-            "null": "Not specified",
             "passport": "Passport",
             "internationalPassport": "International passport",
             "foreignDocument": "Foreign document",
@@ -585,7 +584,6 @@ define({
         "logout": "Logout"
     },
     "countries": {
-        "null": "Not specified",
         "ABH": "Abkhazia",
         "AFG": "Afghanistan",
         "ALA": "Aland Islands",
