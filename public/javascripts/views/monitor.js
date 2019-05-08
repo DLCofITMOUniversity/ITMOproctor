@@ -53,46 +53,31 @@ define([
                 settings: new SettingsView(),
                 demo: new DemoView()
             };
-            // Timers
-            var t1 = setInterval(function() {
-                var rows = self.$Grid.datagrid('getRows');
-                if (rows) {
-                    if (!this.nextRow || this.nextRow >= rows.length) this.nextRow = 0;
-                    var row = rows[this.nextRow];
-                    if (row) {
-                        var updatedRow = self.lastUpdated[row._id];
-                        if (updatedRow) {
-                            self.$Grid.datagrid('updateRow', {
-                                index: this.nextRow,
-                                row: updatedRow
-                            });
-                            self.$Grid.datagrid('highlightRow', this.nextRow);
-                            delete self.lastUpdated[row._id];
-                        }
-                        else {
-                            self.$Grid.datagrid('refreshRow', this.nextRow);
-                        }
-                    }
-                    this.nextRow++;
-                }
-            }, 1000);
-            this.timers = [t1];
+            // Audio notification
+            this.audio = new Audio('sounds/alert.ogg');
             // Exam model
             var Exam = Backbone.Model.extend({
                 urlRoot: 'inspector/exam'
             });
             this.exam = new Exam();
             // Socket events
-            this.lastUpdated = {};
             app.io.notify.on('exam', function(data) {
                 if (!data) return;
-                self.lastUpdated[data._id] = data;
+                var rows = self.$Grid.datagrid('getRows');
+                var rowIndex = rows.findIndex(function(row) {
+                    return row._id === data._id;
+                });
+                if (rowIndex >= 0) {
+                    if (!rows[rowIndex].startDate && data.startDate) self.audio.play();
+                    self.$Grid.datagrid('updateRow', {
+                        index: rowIndex,
+                        row: data
+                    });
+                    self.$Grid.datagrid('highlightRow', rowIndex);
+                }
             });
         },
         destroy: function() {
-            this.timers.forEach(function(element, index, array) {
-                clearInterval(element);
-            });
             for (var v in this.view) {
                 if (this.view[v]) this.view[v].destroy();
             }

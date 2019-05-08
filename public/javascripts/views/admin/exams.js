@@ -19,6 +19,7 @@ define([
         },
         initialize: function(options) {
             // Variables
+            var self = this;
             this.options = options || {};
             // Templates
             this.templates = _.parseTemplate(template);
@@ -29,6 +30,22 @@ define([
                 profileViewer: new ProfileViewer(),
                 passportViewer: new PassportViewer()
             };
+            // Socket events
+            app.io.notify.on('exam', function(data) {
+                if (!data) return;
+                var rows = self.$Grid.datagrid('getRows');
+                var rowIndex = rows.findIndex(function(row) {
+                    return row._id === data._id;
+                });
+                if (rowIndex >= 0) {
+                    data.status = self.getExamStatus(data);
+                    self.$Grid.datagrid('updateRow', {
+                        index: rowIndex,
+                        row: data
+                    });
+                    self.$Grid.datagrid('highlightRow', rowIndex);
+                }
+            });
         },
         destroy: function() {
             for (var v in this.view) {
