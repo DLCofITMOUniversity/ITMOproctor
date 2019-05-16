@@ -64,11 +64,21 @@ define([
             app.io.notify.on('exam', function(data) {
                 if (!data) return;
                 var rows = self.$Grid.datagrid('getRows');
-                var rowIndex = rows.findIndex(function(row) {
-                    return row._id === data._id;
-                });
+                var rowIndex = -1;
+                for (var i = 0; i < rows.length; i++) {
+                    if (rows[i]._id === data._id) {
+                        rowIndex = i;
+                        break;
+                    }
+                }
                 if (rowIndex >= 0) {
-                    if (!rows[rowIndex].startDate && data.startDate) self.audio.play();
+                    var row = rows[rowIndex];
+                    if (row.startDate == data.startDate
+                        && row.stopDate == data.stopDate
+                        && row.inspectorConnected == data.inspectorConnected
+                        && row.resolution == data.resolution
+                        && !(data.startDate && !data.inspectorConnected)) return;
+                    if (data.startDate && !data.inspectorConnected) self.audio.play();
                     self.$Grid.datagrid('updateRow', {
                         index: rowIndex,
                         row: data
