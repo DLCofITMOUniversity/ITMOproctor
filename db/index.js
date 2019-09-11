@@ -1,7 +1,12 @@
 var logger = require('../common/logger');
 var mongoose = require('mongoose');
 var config = require('nconf');
-mongoose.connect(config.get('mongoose:uri'), { useNewUrlParser: true });
+mongoose.connect(config.get('mongoose:uri'), {
+    useNewUrlParser: true,
+    useFindAndModify: false,
+    useCreateIndex: true,
+    useUnifiedTopology: true
+});
 var conn = mongoose.connection;
 var Grid = require('gridfs-stream');
 var moment = require('moment');

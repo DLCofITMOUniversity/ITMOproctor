@@ -1,6 +1,6 @@
 {
   "name": "proctor-server",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "System of distant supervision",
   "contributors": [
     {
@@ -33,39 +33,38 @@
     "postinstall": "cd ./public && bower install"
   },
   "dependencies": {
-    "body-parser": "^1.15.0",
-    "bower": "^1.7.7",
-    "connect-mongo": "^0.8.2",
-    "cookie-parser": "^1.4.1",
+    "body-parser": "^1.19.0",
+    "bower": "^1.8.8",
+    "connect-mongo": "^2.0.3",
+    "cookie-parser": "^1.4.4",
     "crypto": "0.0.3",
-    "ejs": "^0.8.8",
-    "express": "^4.13.4",
-    "express-session": "^1.13.0",
-    "geoip-lite": "^1.1.7",
+    "ejs": "^2.7.1",
+    "express": "^4.17.1",
+    "express-session": "^1.16.2",
+    "geoip-lite": "^1.3.8",
     "gridfs-stream": "git+https://github.com/HolgerFrank/gridfs-stream.git",
-    "kurento-client": "^6.2.0",
-    "moment": "^2.12.0",
-    "mongoose": "^5.0.6",
-    "morgan": "^1.7.0",
-    "multer": "^1.1.0",
-    "nconf": "^0.8.4",
-    "node-polyglot": "^2.3.0",
+    "kurento-client": "^6.11.0",
+    "moment": "^2.24.0",
+    "mongoose": "^5.7.0",
+    "morgan": "^1.9.1",
+    "multer": "^1.4.2",
+    "nconf": "^0.10.0",
+    "node-polyglot": "^2.3.1",
     "node-telegram-bot-api": "^0.30.0",
-    "nodemailer": "^2.3.0",
-    "passport": "^0.3.2",
+    "passport": "^0.4.0",
     "passport-ifmosso": "^1.0.2",
     "passport-local": "^1.0.0",
     "passport-oauth": "^1.0.0",
-    "passport.socketio": "^3.6.1",
-    "request": "^2.69.0",
-    "serve-favicon": "^2.3.0",
-    "socket.io": "^1.4.5",
+    "passport.socketio": "^3.7.0",
+    "request": "^2.88.0",
+    "serve-favicon": "^2.5.0",
+    "socket.io": "^2.2.0",
     "socks5-https-client": "^1.2.1",
     "urlify": "^0.3.6",
-    "winston": "^2.2.0"
+    "winston": "^2.4.4"
   },
   "engines": {
-    "node": ">= 0.12.0"
+    "node": ">=4.0.0"
   },
   "private": true
 }
