@@ -106,7 +106,8 @@ define({
             "name": "ITMOproctor",
             "description": "Distant supervision system",
             "version": "Version",
-            "update": "Update"
+            "update": "Update",
+            "updateMessage": "A new version of the program has been released. Do you want to go to the update interface?"
         }
     },
     "planner": {

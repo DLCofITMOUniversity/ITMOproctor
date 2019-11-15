@@ -62,7 +62,7 @@ define([], function() {
         },
         login: function() {
             var self = this;
-            require([
+            requirejs([
                 "views/login"
             ], function(View) {
                 self.render(View, null, true);
@@ -70,7 +70,7 @@ define([], function() {
         },
         study: function() {
             var self = this;
-            require([
+            requirejs([
                 "views/study"
             ], function(View) {
                 self.render(View);
@@ -78,7 +78,7 @@ define([], function() {
         },
         talk: function(examId) {
             var self = this;
-            require([
+            requirejs([
                 "views/talk"
             ], function(View) {
                 self.render(View, {
@@ -88,7 +88,7 @@ define([], function() {
         },
         monitor: function() {
             var self = this;
-            require([
+            requirejs([
                 "views/monitor"
             ], function(View) {
                 self.render(View);
@@ -96,7 +96,7 @@ define([], function() {
         },
         vision: function(examId) {
             var self = this;
-            require([
+            requirejs([
                 "views/vision"
             ], function(View) {
                 self.render(View, {
@@ -106,7 +106,7 @@ define([], function() {
         },
         multivision: function(examId) {
             var self = this;
-            require([
+            requirejs([
                 "views/multivision"
             ], function(View) {
                 self.render(View, {
@@ -116,7 +116,7 @@ define([], function() {
         },
         admin: function(examId) {
             var self = this;
-            require([
+            requirejs([
                 "views/admin/main"
             ], function(View) {
                 self.render(View, {

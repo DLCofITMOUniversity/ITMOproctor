@@ -15,11 +15,6 @@ define([
             this.eventHandler = function(event) {
                 var message = event.data;
                 switch (message.id) {
-                    case 'sourceId':
-                        if (message.data) {
-                            self.$ScreenId.textbox('setValue', message.data);
-                        }
-                        break;
                     case 'version':
                         self.$Version.text(message.data.version + ' [' + message.data.engine + '/' + message.data.release + ']');
                         self.doUpdate(message.data);
@@ -73,7 +68,24 @@ define([
             this.$Update = this.$('.app-update');
             this.$Dist = this.$('.app-dist');
             this.$ScreenBtn.click(function() {
-                _.postMessage('chooseSourceId', '*');
+                if (!IS_APP) return;
+                nw.Screen.chooseDesktopMedia(['screen'], function(sourceId) {
+                    var constraints = {
+                        audio: false,
+                        video: {
+                            mandatory: {
+                                chromeMediaSource: 'desktop',
+                                chromeMediaSourceId: sourceId
+                            }
+                        }
+                    };
+                    navigator.getUserMedia(constraints, function(stream) {
+                        var screenId = stream.getVideoTracks()[0].label;
+                        self.$ScreenId.textbox('setValue', screenId);
+                    }, function(err) {
+                        console.error(err);
+                    });
+                });
             });
             _.postMessage('getVersion', '*');
             return this;
@@ -132,6 +144,12 @@ define([
                 if (!data) return;
                 if (app.engine == 'node-webkit') {
                     if (data.version != app.version) {
+                        $.messager.confirm(i18n.t('settings.app.update'), i18n.t('settings.app.updateMessage'), function(r) {
+                            if (r) {
+                                self.doOpen();
+                                self.$('.easyui-tabs').tabs('select', 2);
+                            }
+                        });
                         self.$Update.html(i18n.t('settings.app.update') + ': ' +
                             data.version + " (" + moment(data.date).format('YYYY.MM.DD HH:mm:ss') + ")");
                         for (var k in data.md5) {

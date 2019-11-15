@@ -66,7 +66,7 @@ define([], function() {
             };
         },
         onIceCandidate: function(candidate) {
-            console.log('Local candidate ' + JSON.stringify(candidate));
+            // console.log('Local candidate ' + JSON.stringify(candidate));
             var message = {
                 id: 'onIceCandidate',
                 candidate: candidate
@@ -80,11 +80,11 @@ define([], function() {
             }
         },
         parseMessage: function(message) {
-            console.info('Received message: ' + message);
+            // console.info('Received message: ' + message);
             var parsedMessage = JSON.parse(message);
             switch (parsedMessage.id) {
                 case 'registerResponse':
-                    this.resgisterResponse(parsedMessage);
+                    this.registerResponse(parsedMessage);
                     break;
                 case 'callResponse':
                     this.callResponse(parsedMessage);
@@ -140,7 +140,7 @@ define([], function() {
             }
             this.callState = nextState;
         },
-        resgisterResponse: function(message) {
+        registerResponse: function(message) {
             if (message.response == 'accepted') {
                 this.setRegisterState('REGISTERED');
             }
@@ -196,7 +196,7 @@ define([], function() {
         },
         sendMessage: function(message) {
             var jsonMessage = JSON.stringify(message);
-            console.log('Senging message: ' + jsonMessage);
+            // console.log('Senging message: ' + jsonMessage);
             this.ws.send(jsonMessage);
         },
         register: function() {
@@ -219,7 +219,7 @@ define([], function() {
                     this.dispose();
                 }
                 else {
-                    console.log('Invoking SDP offer callback function');
+                    // console.log('Invoking SDP offer callback function');
                     var message = {
                         id: 'call',
                         from: self.get("userid"),

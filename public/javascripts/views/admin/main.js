@@ -56,7 +56,7 @@ define([
                     var target = this;
                     var tab = $(this).tabs('getTab', index);
                     if (!this.views) this.views = {};
-                    require([
+                    requirejs([
                         "views/admin/" + tab[0].id
                     ], function(View) {
                         var view = new View({

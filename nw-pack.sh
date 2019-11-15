@@ -2,9 +2,9 @@
 # nw.js app builder
 # (C) 2015 Anton Skshidlevsky <meefik@gmail.com>, GPLv3
 
-NW_VERSION="0.12.3"
-# Supported platforms: win-ia32 win-x64 linux-ia32 linux-x64 osx-ia32 osx-x64
-NW_PLATFORM="win-ia32 win-x64 linux-ia32 linux-x64 osx-ia32 osx-x64"
+NW_VERSION="0.26.6"
+# Supported platforms: win-ia32 win-x64 linux-ia32 linux-x64 osx-x64
+NW_PLATFORM="win-ia32 win-x64 linux-ia32 linux-x64 osx-x64"
 APP_NAME="itmoproctor"
 APP_DIR="${PWD}/app-nw"
 CACHE_DIR="${PWD}/cache"

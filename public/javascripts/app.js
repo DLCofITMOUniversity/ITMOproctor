@@ -7,6 +7,7 @@ var UPLOAD_LIMIT = 10; // MB
 var TX_MIN = 1; // Mbps
 var RX_MIN = 1; // Mbps
 var REQUEST_INTERVAL = 60; // seconds
+var IS_APP = typeof nw !== 'undefined';
 
 //
 // Loading progress
@@ -18,7 +19,7 @@ $.messager.progress({
 //
 // RequireJS config
 //
-require.config({
+requirejs.config({
     config: {
         replace: {
             pattern: "LANG",
@@ -217,7 +218,7 @@ $.fn.datebox.defaults.formatter = function(d) {
 //
 // Application
 //
-require([
+requirejs([
     "router",
     "models/profile",
     "models/time",

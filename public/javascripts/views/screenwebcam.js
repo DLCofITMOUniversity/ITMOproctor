@@ -161,8 +161,9 @@ define([
                 resolution = resolution ? resolution.get('value').split('x') : [1280, 720];
                 var fps = app.settings.get('screen-fps');
                 fps = fps ? fps.get('value') : 5;
-                var sourceId = app.settings.get('screen-id');
-                sourceId = sourceId ? sourceId.get('value') : 'screen:0';
+                var screenId = app.settings.get('screen-id');
+                screenId = screenId ? screenId.get('value') : 'screen:0:0';
+                var sourceId = IS_APP ? nw.Screen.DesktopCaptureMonitor.registerStream(screenId) : '';
                 constraints.video = {
                     mandatory: {
                         maxWidth: resolution[0],

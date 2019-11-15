@@ -1,6 +1,6 @@
 {
   "name": "proctor-client",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "description": "System of distant supervision",
   "contributors": [{ }],
   "repository": {
@@ -16,13 +16,17 @@
   }],
   "main": "index.html",
   "homepage": "https://proctor.ifmo.ru",
+  "domain": "proctor-client",
+  "nodejs": true,
+  "node-remote": "https://proctor.ifmo.ru/*",
   "window": {
     "title": "ITMOproctor",
     "icon": "icon.png",
     "frame": true,
-    "toolbar": false,
     "width": 1000,
-    "height": 700
+    "height": 700,
+    "min_width": 500,
+    "min_height": 350
   },
   "chromium-args": "--enable-usermedia-screen-capturing",
   "private": true

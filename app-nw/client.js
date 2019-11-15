@@ -12,16 +12,6 @@ function parseArgs(argv) {
 
 function eventHandler(event) {
     switch (event.data) {
-        case 'chooseSourceId':
-            var session = ['screen'];
-            gui.Screen.chooseDesktopMedia(session, function(sourceId) {
-                var message = {
-                    id: 'sourceId',
-                    data: sourceId
-                };
-                event.source.postMessage(message, '*');
-            });
-            break;
         case 'takeScreenshot':
             win.capturePage(function(img) {
                 var message = {
@@ -36,7 +26,7 @@ function eventHandler(event) {
             break;
         case 'getVersion':
             var version = {
-                version: gui.App.manifest.version,
+                version: nw.App.manifest.version,
                 engine: 'node-webkit',
                 release: process.versions['node-webkit']
             };
@@ -73,20 +63,18 @@ function eventHandler(event) {
             break;
     }
 }
-
-var gui = require('nw.gui');
-gui.Screen.Init();
-var win = gui.Window.get();
+if (typeof nw === 'undefined') var nw = require('nw.gui');
+var win = nw.Window.get();
 
 var frame = document.getElementById('app-frame');
 frame.onload = function() {
     this.contentWindow.win = win;
     //win.title = this.contentDocument.title;
 };
-var args = parseArgs(gui.App.argv);
+var args = parseArgs(nw.App.argv);
 var homepage = args['homepage'];
 if (!homepage) {
-    homepage = gui.App.manifest.homepage;
+    homepage = nw.App.manifest.homepage;
 }
 frame.src = homepage + '#' + win.window.name;
 
