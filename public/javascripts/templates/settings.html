@@ -74,8 +74,17 @@
                 <p><strong><%- i18n.t('settings.app.name') %></strong></p>
                 <p><%- i18n.t('settings.app.description') %></p>
                 <p><%- i18n.t('settings.app.version') %>: <span class="app-version">0.0.0</span></p>
-                <p class="app-update"></p>
-                <ul class="app-dist"></ul>
+                <div class="caption" style="display:none">
+                    <p><%- i18n.t('settings.app.update') %>: <span class="app-update"></span></p>
+                    <p><%- i18n.t('settings.app.osVersion') %>: <span class="os-version"></span></p>
+                    <p><%- i18n.t('settings.app.download') %>: <span class="app-link"></span></p>
+                    <p><%- i18n.t('settings.app.versions') %>:</p>
+                    <ul class="app-dist"></ul>
+                </div>
+                <div class="download-info" style="display:none">
+                    <p><%- i18n.t('settings.app.downloading') %>:</p>
+                    <div class="easyui-progressbar download-progress" data-options="width:200,height:18" style="margin:3px 0"></div>
+                </div>
             </div>
         </div>
     </form>

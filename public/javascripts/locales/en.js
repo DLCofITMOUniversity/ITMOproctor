@@ -105,9 +105,13 @@ define({
             "title": "System",
             "name": "ITMOproctor",
             "description": "Distant supervision system",
-            "version": "Version",
-            "update": "Update",
-            "updateMessage": "A new version of the program has been released. Do you want to go to the update interface?"
+            "version": "App version",
+            "osVersion": "Your system",
+            "download": "Download",
+            "versions": "All app versions",
+            "downloading": "Downloading",
+            "update": "Latest version",
+            "updateMessage": "An important update has been released. You need to update the program"
         }
     },
     "planner": {
