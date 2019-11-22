@@ -413,6 +413,10 @@ define([
             if (!val) return;
             return moment(val).format('DD.MM.YYYY HH:mm');
         },
+        formatInverseDate: function(val, row) {
+            if (!val) return;
+            return moment(val).format('YYYY.MM.DD HH:mm');
+        },
         formatSubject: function(val, row) {
             if (!val || !row) return;
             var tpl = _.template(this.templates['subject-item-tpl']);
@@ -448,9 +452,17 @@ define([
             };
             return tpl(data);
         },
+        formatUsername: function(val, row) {
+            if (!val) return;
+            return val.username;
+        },
+        formatFullname: function(val, row) {
+            if (!val) return;
+            return (val.lastname || i18n.t('user.unknown')) + ' ' + (val.firstname || '') + ' ' + (val.middlename || '');
+        },
         formatUser: function(val, row) {
             if (!val) return;
-            return (val.lastname || i18n.t('user.unknown')) + ' ' + val.firstname + ' ' + val.middlename + ' (' + val.username + ')';
+            return (val.lastname || i18n.t('user.unknown')) + ' ' + (val.firstname || '') + ' ' + (val.middlename || '') + ' (' + val.username + ')';
         },
         doSearch: function() {
             var self = this;
@@ -567,18 +579,44 @@ define([
             var dates = this.getDates();
 
             var fields = [{
-                label: i18n.t('admin.examsCsv.identificator'),
-                value: 'examId'
+                label: i18n.t('admin.examsCsv._id'),
+                value: '_id'
             }, {
-                label: i18n.t('admin.examsCsv.code'),
-                value: 'examCode'
+                label: i18n.t('admin.examsCsv.courseCode'),
+                value: 'examId',
+                formatter: function(val, row) {
+                    if (!val) return;
+                    // course-v1:ITMOUniversity+LFNVGTN+fall_2019_urfu#7056
+                    var m = val.match(/\+(.+)\+/); // LFNVGTN
+                    if (m) return m[1];
+                }
+            }, {
+                label: i18n.t('admin.examsCsv.sessionCode'),
+                value: 'examId',
+                formatter: function(val, row) {
+                    if (!val) return;
+                    var m = val.match(/([^+]+)#/); // fall_2019_urfu
+                    if (m) return m[1];
+                }
+            }, {
+                label: i18n.t('admin.examsCsv.testNumber'),
+                value: 'examId',
+                formatter: function(val, row) {
+                    if (!val) return;
+                    var m = val.match(/#(.+)$/); // 7056
+                    if (m) return m[1];
+                }
             }, {
                 label: i18n.t('admin.examsCsv.subject'),
                 value: 'subject'
             }, {
-                label: i18n.t('admin.examsCsv.student'),
+                label: i18n.t('admin.examsCsv.studentUsername'),
                 value: 'student',
-                formatter: self.formatUser
+                formatter: self.formatUsername
+            }, {
+                label: i18n.t('admin.examsCsv.studentFullname'),
+                value: 'student',
+                formatter: self.formatFullname
             }, {
                 label: i18n.t('admin.examsCsv.inspector'),
                 value: 'inspector',
@@ -590,19 +628,37 @@ define([
             }, {
                 label: i18n.t('admin.examsCsv.leftDate'),
                 value: 'leftDate',
-                formatter: self.formatDate
+                formatter: self.formatInverseDate
             }, {
                 label: i18n.t('admin.examsCsv.rightDate'),
                 value: 'rightDate',
-                formatter: self.formatDate
+                formatter: self.formatInverseDate
+            }, {
+                label: i18n.t('admin.examsCsv.beginDate'),
+                value: 'beginDate',
+                formatter: self.formatInverseDate
+            }, {
+                label: i18n.t('admin.examsCsv.endDate'),
+                value: 'endDate',
+                formatter: self.formatInverseDate
             }, {
                 label: i18n.t('admin.examsCsv.startDate'),
                 value: 'startDate',
-                formatter: self.formatDate
+                formatter: function(val, row) {
+                    var res = self.formatInverseDate(val, row);
+                    if (res && res[0] === '0')
+                        res = self.formatInverseDate(row.beginDate, row);
+                    return res;
+                }
             }, {
                 label: i18n.t('admin.examsCsv.stopDate'),
                 value: 'stopDate',
-                formatter: self.formatDate
+                formatter: function(val, row) {
+                    var res = self.formatInverseDate(val, row);
+                    if (res && res[0] === '0')
+                        res = self.formatInverseDate(row.endDate, row);
+                    return res;
+                }
             }, {
                 label: i18n.t('admin.examsCsv.status'),
                 value: 'status',
@@ -643,13 +699,14 @@ define([
             var csv = rows.map(function(row) {
                 return fields.map(function(field) {
                     var fieldValue = row[field.value];
-
-                    if (typeof field.formatter == 'function') {
-                        return JSON.stringify(field.formatter(fieldValue, row), replacer);
-                    }
-                    return JSON.stringify(fieldValue, replacer);
+                    var res = fieldValue;
+                    if (typeof field.formatter == 'function')
+                        res = field.formatter(res, row);
+                    res = JSON.stringify(res, replacer);
+                    res = res.replace(/\\"/g, '\\""').replace(/(\\r)?\\n/g, '\r\n');
+                    return res;
                 }).join(',');
-            })
+            });
 
             // Add headers
             csv.unshift(fields.map(function(row) {
