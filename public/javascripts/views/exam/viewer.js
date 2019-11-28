@@ -30,7 +30,7 @@ define([
             var dialog = $(this.el).dialog({
                 title: i18n.t('exam.title'),
                 width: 500,
-                height: 400,
+                height: 480,
                 closed: true,
                 modal: true,
                 content: this.loadingMsg,

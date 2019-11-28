@@ -56,10 +56,8 @@ router.fetchExams = function(req, res, next) {
                         logger.warn("Incorrect JSON format.");
                         return next();
                     }
-                    //console.log(json);
-		    //logger.warn(json);
-		    logger.warn(body);
-		    var data = {};
+                    logger.warn(body);
+                    var data = {};
                     try {
                         var path = require('path');
                         data = require(path.join('..', config.get('api:openedu:data')));
@@ -76,8 +74,15 @@ router.fetchExams = function(req, res, next) {
                         for (var i = 0, li = exams.length; i < li; i++) {
                             if (exams[i].is_active && exams[i].is_proctored) {
                                 var tpl = data[exams[i].content_id] || {};
+                                var courseCode = exams[i].course_id.match(/\+(.+)\+/);
+                                var sessionCode = exams[i].course_id.match(/[^+]+$/);
+                                courseCode = courseCode ? courseCode[1] : undefined;
+                                sessionCode = sessionCode ? sessionCode[0] : undefined;
                                 arr.push({
                                     examId: exams[i].course_id + '#' + exams[i].id,
+                                    courseCode: courseCode,
+                                    sessionCode: sessionCode,
+                                    testNumber: exams[i].id,
                                     leftDate: tpl.leftDate || exams[i].start,
                                     rightDate: tpl.rightDate || exams[i].deadline,
                                     subject: tpl.subject || json[k].name + ' (' + exams[i].exam_name + ')',

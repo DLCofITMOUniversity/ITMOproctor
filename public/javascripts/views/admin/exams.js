@@ -583,27 +583,30 @@ define([
                 value: '_id'
             }, {
                 label: i18n.t('admin.examsCsv.courseCode'),
-                value: 'examId',
+                value: 'courseCode',
                 formatter: function(val, row) {
-                    if (!val) return;
+                    if (val) return val;
+                    if (!row.examId) return;
                     // course-v1:ITMOUniversity+LFNVGTN+fall_2019_urfu#7056
-                    var m = val.match(/\+(.+)\+/); // LFNVGTN
+                    var m = row.examId.match(/\+(.+)\+/); // LFNVGTN
                     if (m) return m[1];
                 }
             }, {
                 label: i18n.t('admin.examsCsv.sessionCode'),
-                value: 'examId',
+                value: 'sessionCode',
                 formatter: function(val, row) {
-                    if (!val) return;
-                    var m = val.match(/([^+]+)#/); // fall_2019_urfu
+                    if (val) return val;
+                    if (!row.examId) return;
+                    var m = row.examId.match(/([^+]+)#/); // fall_2019_urfu
                     if (m) return m[1];
                 }
             }, {
                 label: i18n.t('admin.examsCsv.testNumber'),
-                value: 'examId',
+                value: 'testNumber',
                 formatter: function(val, row) {
-                    if (!val) return;
-                    var m = val.match(/#(.+)$/); // 7056
+                    if (val) return val;
+                    if (!row.examId) return;
+                    var m = row.examId.match(/#(.+)$/); // 7056
                     if (m) return m[1];
                 }
             }, {

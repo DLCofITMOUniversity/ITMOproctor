@@ -10,6 +10,18 @@ var Exam = new Schema({
     examId: {
         type: String
     },
+    // Код курса экзамена в LMS
+    courseCode: {
+        type: String
+    },
+    // Код сессии экзамена в LMS
+    sessionCode: {
+        type: String
+    },
+    // Номер испытания экзамена в LMS
+    testNumber: {
+        type: String
+    },
     // Идентификатор экзаменационной сессии в LMS
     examCode: {
         type: String

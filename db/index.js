@@ -484,7 +484,7 @@ var db = {
                 select: 'submit hash'
             }];
             // Fields for text search
-            var props = ["student", "inspector","duration","subject","examId","examCode"];
+            var props = ["student", "inspector","duration","subject","examId","examCode","courseCode","sessionCode","testNumber"];
             // Query
             var Exam = require('./models/exam');
             Exam.count(query, function(err, count) {
@@ -526,6 +526,9 @@ var db = {
             var exam = new Exam({
                 subject: args.data.subject,
                 examCode: args.data.examCode,
+                courseCode: args.data.courseCode,
+                sessionCode: args.data.sessionCode,
+                testNumber: args.data.testNumber,
                 courseId: args.data.courseId,
                 examId: args.data.examId,
                 duration: args.data.duration,
@@ -547,6 +550,9 @@ var db = {
             var data = {
                 subject: args.data.subject,
                 examCode: args.data.examCode,
+                courseCode: args.data.courseCode,
+                sessionCode: args.data.sessionCode,
+                testNumber: args.data.testNumber,
                 courseId: args.data.courseId,
                 examId: args.data.examId,
                 duration: args.data.duration,
@@ -755,6 +761,9 @@ var db = {
                         appends.push({
                             //_id: mongoose.Types.ObjectId(),
                             examId: proctored[i].examId,
+                            courseCode: proctored[i].courseCode,
+                            sessionCode: proctored[i].sessionCode,
+                            testNumber: proctored[i].testNumber,
                             student: args.userId,
                             subject: proctored[i].subject,
                             duration: proctored[i].duration,
