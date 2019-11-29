@@ -601,8 +601,8 @@ define([
                     if (m) return m[1];
                 }
             }, {
-                label: i18n.t('admin.examsCsv.testNumber'),
-                value: 'testNumber',
+                label: i18n.t('admin.examsCsv.assignment'),
+                value: 'assignment',
                 formatter: function(val, row) {
                     if (val) return val;
                     if (!row.examId) return;

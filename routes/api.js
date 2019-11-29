@@ -82,7 +82,7 @@ router.fetchExams = function(req, res, next) {
                                     examId: exams[i].course_id + '#' + exams[i].id,
                                     courseCode: courseCode,
                                     sessionCode: sessionCode,
-                                    testNumber: exams[i].id,
+                                    assignment: exams[i].id,
                                     leftDate: tpl.leftDate || exams[i].start,
                                     rightDate: tpl.rightDate || exams[i].deadline,
                                     subject: tpl.subject || json[k].name + ' (' + exams[i].exam_name + ')',

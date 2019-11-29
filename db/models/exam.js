@@ -19,7 +19,7 @@ var Exam = new Schema({
         type: String
     },
     // Номер испытания экзамена в LMS
-    testNumber: {
+    assignment: {
         type: String
     },
     // Идентификатор экзаменационной сессии в LMS

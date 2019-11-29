@@ -484,7 +484,7 @@ var db = {
                 select: 'submit hash'
             }];
             // Fields for text search
-            var props = ["student", "inspector","duration","subject","examId","examCode","courseCode","sessionCode","testNumber"];
+            var props = ["student", "inspector","duration","subject","examId","examCode","courseCode","sessionCode","assignment"];
             // Query
             var Exam = require('./models/exam');
             Exam.count(query, function(err, count) {
@@ -528,7 +528,7 @@ var db = {
                 examCode: args.data.examCode,
                 courseCode: args.data.courseCode,
                 sessionCode: args.data.sessionCode,
-                testNumber: args.data.testNumber,
+                assignment: args.data.assignment,
                 courseId: args.data.courseId,
                 examId: args.data.examId,
                 duration: args.data.duration,
@@ -552,7 +552,7 @@ var db = {
                 examCode: args.data.examCode,
                 courseCode: args.data.courseCode,
                 sessionCode: args.data.sessionCode,
-                testNumber: args.data.testNumber,
+                assignment: args.data.assignment,
                 courseId: args.data.courseId,
                 examId: args.data.examId,
                 duration: args.data.duration,
@@ -763,7 +763,7 @@ var db = {
                             examId: proctored[i].examId,
                             courseCode: proctored[i].courseCode,
                             sessionCode: proctored[i].sessionCode,
-                            testNumber: proctored[i].testNumber,
+                            assignment: proctored[i].assignment,
                             student: args.userId,
                             subject: proctored[i].subject,
                             duration: proctored[i].duration,
