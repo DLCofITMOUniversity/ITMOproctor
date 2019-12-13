@@ -117,9 +117,14 @@ define([
             this.members.fetch({
                 success: function(collection) {
                     var tpl = _.template(self.templates['members-tpl']);
+                    var members = collection.toJSON();
+                    for (var i = 0; i < members.length; i++) {
+                        members[i].platform = app.platformString(members[i], i18n);
+                        members[i].app = app.appString(members[i]);
+                    }
                     var data = {
                         i18n: i18n,
-                        members: collection.toJSON()
+                        members: members
                     };
                     self.$Members.html(tpl(data));
                 }

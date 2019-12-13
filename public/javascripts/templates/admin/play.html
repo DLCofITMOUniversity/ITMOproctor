@@ -174,8 +174,14 @@
 <script type="text/template" id="members-tpl">
 <% _.each(members, function(member, index, list){ %>
     <div style="padding-bottom:2px">
-        <div style="font-weight:bold"><i class="fa fa-caret-right"></i> <%- member.user.lastname || i18n.t('user.unknown') %> <%- member.user.firstname %> <%- member.user.middlename %> (<%- i18n.t('user.role.' + member.user.role) %>)</div>
-        <div style="color:gray"><%- member.country || "-" %>, <%- member.city || "-" %> [IP: <%- member.ip %>]</div>
+        <div style="font-weight:bold">
+            <i class="fa fa-caret-right"></i> <%- member.user.lastname || i18n.t('user.unknown') %> <%- member.user.firstname %> <%- member.user.middlename %> (<%- i18n.t('user.role.' + member.user.role) %>)
+        </div>
+        <div style="color:gray">
+            <div><%- member.country || "-" %>, <%- member.city || "-" %> [IP: <%- member.ip %>]</div>
+            <div><%- i18n.t('members.os') %>: <%- member.platform %></div>
+            <div><%- i18n.t('members.version') %>: <%- member.app %></div>
+        </div>
     </div>
 <% }); %>
 </script>

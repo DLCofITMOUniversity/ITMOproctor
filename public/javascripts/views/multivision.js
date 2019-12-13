@@ -421,7 +421,8 @@ define([
         initExam: function(exam) {
             var examId = exam.get('_id');
             this.exams[examId].members = new MembersView({
-                examId: examId
+                examId: examId,
+                showInfo: true
             });
             this.exams[examId].notes = new NotesView({
                 examId: examId

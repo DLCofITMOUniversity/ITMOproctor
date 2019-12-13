@@ -37,7 +37,8 @@ define([
             this.exam.fetch({
                 success: function(exam) {
                     self.render();
-                }
+                },
+                data: APP_PLATFORM_INFO
             });
         },
         render: function() {

@@ -113,6 +113,8 @@ define({
             "description": "Система дистанционного надзора",
             "version": "Версия приложения",
             "osVersion": "Ваша система",
+            "bit": "%{n} бита",
+            "osNotSupported": "не поддерживается",
             "download": "Скачать",
             "versions": "Все версии приложения",
             "downloading": "Идет загрузка",
@@ -321,7 +323,9 @@ define({
         "onDate": "Заметка на"
     },
     "members": {
-        "title": "Участники"
+        "title": "Участники",
+        "os": "ОС",
+        "version": "Приложение"
     },
     "webcamera": {
         "title": "Веб-камера"

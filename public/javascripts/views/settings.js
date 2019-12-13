@@ -11,17 +11,6 @@ define([
             var self = this;
             // Templates
             this.templates = _.parseTemplate(template);
-            // Events
-            this.eventHandler = function(event) {
-                var message = event.data;
-                switch (message.id) {
-                    case 'version':
-                        self.$Version.text(message.data.version + ' [' + message.data.engine + '/' + message.data.release + ']');
-                        self.doUpdate(message.data);
-                        break;
-                }
-            };
-            window.addEventListener('message', this.eventHandler);
             this.render();
         },
         destroy: function() {
@@ -66,10 +55,10 @@ define([
             this.$ScreenId = this.$('.screen-id');
             this.$Version = this.$('.app-version');
             this.$Update = this.$('.app-update');
-            self.$OsVersion = self.$('.os-version');
-            self.$AppLink = self.$('.app-link');
-            self.$Download = self.$('.download');
-            self.$Caption = self.$('.caption');
+            this.$OsVersion = this.$('.os-version');
+            this.$AppLink = this.$('.app-link');
+            this.$Download = this.$('.download');
+            this.$Caption = this.$('.caption');
             this.$Dist = this.$('.app-dist');
             this.$DownloadInfo = this.$('.download-info');
             this.$Progress = this.$('.download-progress');
@@ -93,7 +82,13 @@ define([
                     });
                 });
             });
-            _.postMessage('getVersion', '*');
+            if (APP_PLATFORM_INFO.os) {
+                var platform = app.platformString(APP_PLATFORM_INFO, i18n);
+                if (platform == '-') platform = i18n.t('settings.app.osNotSupported');
+                this.$OsVersion.html(platform);
+            }
+            if (APP_PLATFORM_INFO.version)
+                this.doUpdate();
             return this;
         },
         getMediaSources: function(kind, callback) {
@@ -144,33 +139,21 @@ define([
         doClose: function() {
             this.$Dialog.dialog('close');
         },
-        doUpdate: function(app) {
+        doUpdate: function() {
             var self = this;
+            this.$Version.text(app.appString(APP_PLATFORM_INFO));
             $.getJSON("dist/metadata.json", function(data) {
                 if (!data) return;
-                if (app.engine == 'node-webkit') {
-                    if (data.version != app.version) {
+                if (APP_PLATFORM_INFO.engine == 'node-webkit') {
+                    if (data.version != APP_PLATFORM_INFO.version) {
                         $.messager.alert(i18n.t('settings.app.update'), i18n.t('settings.app.updateMessage'), 'warning', function() {
                             self.doOpen();
                             self.$('.easyui-tabs').tabs('select', 2);
                         });
-                        var platform = {
-                            os: self.detectOS(),
-                            arch: self.detectArch(),
-                            toString: function() {
-                                switch(this.os) {
-                                    case 'win': return 'Windows (' + this.arch + ' бита)';
-                                    case 'osx': return 'Mac OS X (64 бита)';
-                                    case 'linux': return 'Linux (' + this.arch + ' бита)';
-                                    default: return 'не поддерживается';
-                                }
-                            }
-                        };
                         self.$Update.html(data.version + " (" + moment(data.date).format('YYYY.MM.DD HH:mm:ss') + ")");
-                        self.$OsVersion.html(platform.toString());
                         for (var k in data.md5) {
                             self.$Dist.append('<li><a href="dist/' + k + '" title="md5: ' + data.md5[k] + '">' + k + '</a></li>');
-                            if (k.indexOf(platform.os) != -1 && k.indexOf(platform.arch) != -1) {
+                            if (k.indexOf(APP_PLATFORM_INFO.os) != -1 && k.indexOf(APP_PLATFORM_INFO.arch) != -1) {
                                 self.$AppLink.html('<a href="/dist/' + k + '" title="md5: ' + data.md5[k] + '">' + k + '</a>');
                                 self.$Download.show();
                             }
@@ -183,26 +166,7 @@ define([
                         self.$Caption.show();
                     }
                 }
-
             });
-        },
-        detectOS: function() {
-            var os = "unknown";
-            if (navigator.platform.toUpperCase().indexOf('WIN') !== -1) os = "win";
-            else if (navigator.platform.toUpperCase().indexOf('MAC') !== -1) os = "osx";
-            else if (navigator.platform.toUpperCase().indexOf('LINUX') !== -1) os = "linux";
-            return os;
-        },
-        detectArch: function() {
-            var arch = "32";
-            var arr = ["x86_64", "x86-64", "Win64", "x64;", "amd64", "AMD64", "WOW64", "x64_64"];
-            for (var i = 0, l = arr.length; i < l; i++) {
-                if (navigator.userAgent.indexOf(arr[i]) !== -1) {
-                    arch = "64";
-                    break;
-                }
-            }
-            return arch;
         },
         download: function(url, filename) {
             var self = this;

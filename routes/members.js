@@ -20,7 +20,12 @@ router.updateMember = function(req, res, next) {
     var args = {
         examId: req.params.examId,
         userId: req.user._id,
-        ip: req.ip
+        ip: req.ip,
+        os: req.query.os,
+        arch: req.query.arch,
+        version: req.query.version,
+        engine: req.query.engine,
+        release: req.query.release
     };
     db.members.update(args, function(err, member) {
         if (err) console.log(err);

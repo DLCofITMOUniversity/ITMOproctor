@@ -95,11 +95,15 @@ define([
             // Socket notification
             app.io.notify.on('exam-' + this.options.examId, function(data) {
                 if (!app.isMe(data.userId)) {
-                    self.exam.fetch();
+                    self.exam.fetch({
+                        data: APP_PLATFORM_INFO
+                    });
                 }
             });
             // Start exam
-            this.exam.fetch();
+            this.exam.fetch({
+                data: APP_PLATFORM_INFO
+            });
         },
         render: function() {
             var self = this;

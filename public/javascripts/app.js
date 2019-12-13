@@ -8,6 +8,13 @@ var TX_MIN = 1; // Mbps
 var RX_MIN = 1; // Mbps
 var REQUEST_INTERVAL = 60; // seconds
 var IS_APP = typeof nw !== 'undefined';
+var APP_PLATFORM_INFO = {
+    os: '',
+    arch: '',
+    version: '',
+    engine: '',
+    release: ''
+};
 
 //
 // Loading progress
@@ -282,11 +289,74 @@ requirejs([
         },
         now: function() {
             return this.time.now();
+        },
+        getInfo: function() {
+            var os = app.detectOS();
+            var arch = (os == 'osx' ? '64' : app.detectArch());
+            APP_PLATFORM_INFO.os = os;
+            APP_PLATFORM_INFO.arch = arch;
+            // if (!IS_APP) return; // Works only with app versions >= 0.4.0
+            var eventHandler = function(event) {
+                var message = event.data;
+                if (message.id != 'version') return;
+                APP_PLATFORM_INFO.version = message.data.version;
+                APP_PLATFORM_INFO.engine = message.data.engine;
+                APP_PLATFORM_INFO.release = message.data.release;
+                window.removeEventListener('message', eventHandler);
+            };
+            window.addEventListener('message', eventHandler);
+            var tries = 3;
+            var retry = function() {
+                if (tries--) {
+                    setTimeout(function() {
+                        if (window.win) {
+                            var win = window.win;
+                            win.window.postMessage('getVersion', '*');
+                        }
+                        else retry();
+                    }, 0);
+                }
+                else {
+                    window.removeEventListener('message', eventHandler);
+                }
+            };
+            retry();
+        },
+        detectOS: function() {
+            var os = "unknown";
+            if (navigator.platform.toUpperCase().indexOf('WIN') !== -1) os = "win";
+            else if (navigator.platform.toUpperCase().indexOf('MAC') !== -1) os = "osx";
+            else if (navigator.platform.toUpperCase().indexOf('LINUX') !== -1) os = "linux";
+            return os;
+        },
+        detectArch: function() {
+            var arch = "32";
+            var arr = ["x86_64", "x86-64", "Win64", "x64;", "amd64", "AMD64", "WOW64", "x64_64"];
+            for (var i = 0, l = arr.length; i < l; i++) {
+                if (navigator.userAgent.indexOf(arr[i]) !== -1) {
+                    arch = "64";
+                    break;
+                }
+            }
+            return arch;
+        },
+        platformString: function(data, i18n) {
+            switch(data.os) {
+                case 'win': return 'Windows (' + i18n.t('settings.app.bit', {n: data.arch}) + ')';
+                case 'osx': return 'Mac OS X (' + i18n.t('settings.app.bit', {n: data.arch}) + ')';
+                case 'linux': return 'Linux (' + i18n.t('settings.app.bit', {n: data.arch}) + ')';
+                default: return '-';
+            }
+        },
+        appString: function(data) {
+            if (data.version) return data.version + ' [' + data.engine + '/' + data.release + ']';
+            return '-';
         }
     };
     // starting
     $(document).ready(function() {
         console.log('ready');
+        app.getInfo();
         if (app.isAuth()) {
             app.time.syncTime();
             app.connect();

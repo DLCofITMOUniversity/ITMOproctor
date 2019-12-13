@@ -23,9 +23,15 @@ define([
                     this.listenTo(this.model, 'destroy', this.remove);
                 },
                 render: function() {
+                    var member = this.model.toJSON();
+                    if (self.options.showInfo) {
+                        member.platform = app.platformString(member, i18n);
+                        member.app = app.appString(member);
+                    }
                     this.$el.html(this.tpl({
                         i18n: i18n,
-                        member: this.model.toJSON()
+                        member: member,
+                        showInfo: self.options.showInfo
                     }));
                     return this;
                 }

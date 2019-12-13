@@ -88,7 +88,8 @@ define([
                     templates: true
                 }),
                 members: new MembersView({
-                    examId: this.options.examId
+                    examId: this.options.examId,
+                    showInfo: true
                 }),
                 webcam: new WebcamView({
                     examId: this.options.examId,
@@ -143,7 +144,9 @@ define([
             }, REQUEST_INTERVAL * 1000);
             this.timers = [t1];
             // Start exam
-            this.exam.fetch();
+            this.exam.fetch({
+                data: APP_PLATFORM_INFO
+            });
         },
         render: function() {
             var self = this;

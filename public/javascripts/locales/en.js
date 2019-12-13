@@ -113,6 +113,8 @@ define({
             "description": "Distant supervision system",
             "version": "App version",
             "osVersion": "Your system",
+            "bit": "%{n}-bit",
+            "osNotSupported": "not supported",
             "download": "Download",
             "versions": "All app versions",
             "downloading": "Downloading",
@@ -321,7 +323,9 @@ define({
         "onDate": "A note for"
     },
     "members": {
-        "title": "Members"
+        "title": "Members",
+        "os": "OS",
+        "version": "App"
     },
     "webcamera": {
         "title": "Webcam"

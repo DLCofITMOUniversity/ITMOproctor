@@ -32,6 +32,26 @@ var Member = new Schema({
     // Город
     city: {
         type: String
+    },
+    // Операционная система
+    os: {
+        type: String
+    },
+    // Разрядность ОС
+    arch: {
+        type: String
+    },
+    // Версия приложения
+    version: {
+        type: String
+    },
+    // Движок браузера
+    engine: {
+        type: String
+    },
+    // Версия NW.js
+    release: {
+        type: String
     }
 });
 module.exports = mongoose.model('Member', Member);

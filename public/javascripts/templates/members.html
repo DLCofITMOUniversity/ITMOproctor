@@ -8,6 +8,16 @@
 <ul class="members-output" style="list-style-type:none;padding:.3em;margin:0"></ul>
 </script>
 <script type="text/template" id="member-item-tpl">
-<div style="font-weight:bold"><i class="fa fa-caret-right"></i> <%- member.user.lastname || i18n.t('user.unknown') %> <%- member.user.firstname %> <%- member.user.middlename %> (<%- i18n.t('user.role.' + member.user.role) %>)</div>
-<div style="color:gray"><%- member.country || "-" %>, <%- member.city || "-" %> [IP: <%- member.ip %>]</div>
+<div style="font-weight:bold">
+    <i class="fa fa-caret-right"></i> <%- member.user.lastname || i18n.t('user.unknown') %> <%- member.user.firstname %> <%- member.user.middlename %> (<%- i18n.t('user.role.' + member.user.role) %>)
+</div>
+<div style="color:gray">
+    <% if(showInfo) { %>
+        <div><%- member.country || "-" %>, <%- member.city || "-" %> [IP: <%- member.ip %>]</div>
+        <div><%- i18n.t('members.os') %>: <%- member.platform %></div>
+        <div><%- i18n.t('members.version') %>: <%- member.app %></div>
+    <% } else { %>
+        <div><%- member.country || "-" %>, <%- member.city || "-" %></div>
+    <% } %>
+</div>
 </script>

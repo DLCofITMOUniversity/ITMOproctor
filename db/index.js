@@ -1510,7 +1510,12 @@ var db = {
                 time: Date.now(),
                 ip: args.ip,
                 country: geo.country,
-                city: geo.city
+                city: geo.city,
+                os: args.os,
+                arch: args.arch,
+                version: args.version,
+                engine: args.engine,
+                release: args.release
             }, {
                 upsert: true
             }, callback);
