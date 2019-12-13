@@ -9,6 +9,7 @@ APP_NAME="itmoproctor"
 APP_DIR="${PWD}/app-nw"
 CACHE_DIR="${PWD}/cache"
 DIST_DIR="${PWD}/public/dist"
+SDK=false
 
 download_nw()
 {
@@ -58,6 +59,16 @@ pack_upx()
    echo -n "Packaging nw.js using UPX... "
    local files=$(find $target_dir -type f -name "nw" -o -name "nw.exe" | tr '\n' ' ')
    [ -n "${files}" ] && upx ${files} > /dev/null
+   echo "done"
+}
+
+pack_zip_app()
+{
+   local target_dir=$1
+   local archive=$2
+   echo -n "Packaging ${archive##*/}... "
+   [ -e "$archive" ] && rm $archive
+   (cd $target_dir; zip -q $archive * -x extra/)
    echo "done"
 }
 
@@ -154,9 +165,16 @@ mk_meta()
 # Exec
 #
 
+if [ "$SDK" = true ]
+then
+   SDK_STRING="-sdk"
+else
+   SDK_STRING=""
+fi
+
 mk_dir ${CACHE_DIR}
 clean_dir ${DIST_DIR}
-pack_zip ${APP_DIR} ${CACHE_DIR}/app.nw
+pack_zip_app ${APP_DIR} ${CACHE_DIR}/app.nw
 
 for platform in ${NW_PLATFORM}
 do
@@ -164,15 +182,16 @@ do
    platform_dir=${CACHE_DIR}/${platform}
    case "${platform}" in
    linux-*)
-      build_app "http://dl.nwjs.io/v${NW_VERSION}/nwjs-v${NW_VERSION}-${platform}.tar.gz" ${platform_dir}
+      build_app "http://dl.nwjs.io/v${NW_VERSION}/nwjs${SDK_STRING}-v${NW_VERSION}-${platform}.tar.gz" ${platform_dir}
+      cp -a ${APP_DIR}/extra/linux/. ${platform_dir}
       pack_tgz ${platform_dir} ${DIST_DIR}/${APP_NAME}-${platform}.tar.gz
    ;;
    win-*)
-      build_app "http://dl.nwjs.io/v${NW_VERSION}/nwjs-v${NW_VERSION}-${platform}.zip" ${platform_dir}
+      build_app "http://dl.nwjs.io/v${NW_VERSION}/nwjs${SDK_STRING}-v${NW_VERSION}-${platform}.zip" ${platform_dir}
       pack_zip ${platform_dir} ${DIST_DIR}/${APP_NAME}-${platform}.zip
    ;;
    osx-*)
-      build_app "http://dl.nwjs.io/v${NW_VERSION}/nwjs-v${NW_VERSION}-${platform}.zip" ${platform_dir}
+      build_app "http://dl.nwjs.io/v${NW_VERSION}/nwjs${SDK_STRING}-v${NW_VERSION}-${platform}.zip" ${platform_dir}
       pack_zip ${platform_dir} ${DIST_DIR}/${APP_NAME}-${platform}.zip
    ;;
    esac

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=ITMOproctor
+Comment=ITMOproctor distant supervision system
+GenericName[ru]=ITMOproctor
+Comment[ru]=Система дистанционного надзора ITMOproctor
+Exec=bash -e -c 'cd $(dirname %k) && ./itmoproctor &'
+Terminal=false
+Categories=Internet
