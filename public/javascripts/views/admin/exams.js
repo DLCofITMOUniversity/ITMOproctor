@@ -582,6 +582,9 @@ define([
                 label: i18n.t('admin.examsCsv._id'),
                 value: '_id'
             }, {
+                label: i18n.t('admin.examsCsv.examId'),
+                value: 'examId'
+            }, {
                 label: i18n.t('admin.examsCsv.courseCode'),
                 value: 'courseCode',
                 formatter: function(val, row) {
