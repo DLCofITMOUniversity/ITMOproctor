@@ -268,7 +268,8 @@ define([
                     { label: 7 },
                     { label: 4 },
                     { label: 5 },
-                    { label: 6 }
+                    { label: 6 },
+                    { label: 8 }
                 ],
                 formatter: function(row) {
                     return self.colorStatus(self.processStatus(row.label, row));
@@ -327,7 +328,7 @@ define([
             if (status[0] == 'any') status = [];
             else if (status[0] == 'except0') {
                 status = [];
-                for (var i = 1; i <= 7; i++)
+                for (var i = 1; i <= 8; i++)
                     status.push(i);
             }
             status = status.join(',');
@@ -391,6 +392,11 @@ define([
                     return {
                         statusName: i18n.t('exam.status.7'),
                         color: 'red'
+                    };
+                case 8:
+                    return {
+                        statusName: i18n.t('exam.status.8'),
+                        color: '#303030'
                     };
                 default:
                     return {
@@ -565,7 +571,7 @@ define([
                 var beginDate = moment(data.beginDate);
                 var endDate = moment(data.endDate);
                 if (beginDate > now) status = 1;
-                if (endDate <= now) status = 6;
+                if (endDate <= now) status = 8;
                 if (beginDate <= now && endDate > now) status = 2;
                 if (data.startDate) status = 3;
                 if (data.inspectorConnected === true) status = 7;

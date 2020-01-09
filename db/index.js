@@ -1626,7 +1626,7 @@ var db = {
                     var beginDate = moment(row.beginDate);
                     var endDate = moment(row.endDate);
                     if (beginDate > now) status = 1;
-                    if (endDate <= now) status = 6;
+                    if (endDate <= now) status = 8;
                     if (beginDate <= now && endDate > now) status = 2;
                     if (row.startDate) status = 3;
                     if (row.inspectorConnected === true) status = 7;
@@ -1648,7 +1648,7 @@ var db = {
                 var beginDate = moment(data.beginDate);
                 var endDate = moment(data.endDate);
                 if (beginDate > now) status = 1;
-                if (endDate <= now) status = 6;
+                if (endDate <= now) status = 8;
                 if (beginDate <= now && endDate > now) status = 2;
                 if (data.startDate) status = 3;
                 if (data.inspectorConnected === true) status = 7;

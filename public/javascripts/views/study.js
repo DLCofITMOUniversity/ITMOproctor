@@ -289,7 +289,7 @@ define([
                 var beginDate = moment(row.beginDate);
                 var endDate = moment(row.endDate);
                 if (beginDate > d) status = 1;
-                if (endDate <= d) status = 6;
+                if (endDate <= d) status = 8;
                 if (beginDate <= d && endDate > d) status = 2;
                 if (row.startDate) status = 3;
                 if (row.inspectorConnected === true) status = 7;
@@ -313,6 +313,8 @@ define([
                     return '<span style="color:gray;">' + i18n.t('exam.status.6') + '</span>';
                 case 7:
                     return '<span style="color:red;">' + i18n.t('exam.status.7') + '</span>';
+                case 8:
+                    return '<span style="color:#303030;">' + i18n.t('exam.status.8') + '</span>';
                 default:
                     return null;
             }

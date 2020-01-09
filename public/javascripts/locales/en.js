@@ -85,7 +85,8 @@ define({
             "4": "Accepted",
             "5": "Intercepted",
             "6": "Missed",
-            "7": "In process"
+            "7": "In process",
+            "8": "Absence"
         }
     },
     "settings": {
