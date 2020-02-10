@@ -321,7 +321,7 @@ define([
             var isAllow = function() {
                 var allow = false;
                 if (beginDate <= now && row.startDate && !row.stopDate &&
-                    app.isMe(row.inspector._id)) {
+                    (app.isMe(row.inspector._id) || app.isAdmin())) {
                     allow = true;
                 }
                 return allow;

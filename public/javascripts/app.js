@@ -287,6 +287,9 @@ requirejs([
         isMe: function(id) {
             return this.profile.get('_id') === id;
         },
+        isAdmin: function() {
+            return this.profile.get('role') === 3;
+        },
         now: function() {
             return this.time.now();
         },
