@@ -1,37 +1,45 @@
 var winston = require('winston');
+require('winston-daily-rotate-file');
 var config = require('nconf');
 
-var logger = new(winston.Logger)({
+var formatMsg = function(info) {
+    return `${info.timestamp} ${info.level}: ${info.message}`;
+};
+
+var logger = winston.createLogger({
     level: config.get('logger:level'),
     transports: [
-        new(winston.transports.Console)({
-            timestamp: true,
-            colorize: true,
+        new (winston.transports.Console)({
+            format: winston.format.combine(
+                winston.format.splat(),
+                winston.format.colorize(),
+                winston.format.timestamp({
+                    format: 'YYYY-MM-DDTHH:mm:ss.SSS'
+                }),
+                winston.format.printf(formatMsg)
+            ),
+            handleExceptions: true
         }),
-        new(winston.transports.File)({
-            json: false,
-            filename: config.get('logger:file'),
-        })
-    ],
-    exceptionHandlers: [
-        new(winston.transports.Console)({
-            timestamp: true,
-            handleExceptions: true,
-            humanReadableUnhandledException: true
-        }),
-        new(winston.transports.File)({
-            json: false,
-            timestamp: true,
-            handleExceptions: true,
-            humanReadableUnhandledException: true,
-            filename: config.get('logger:file')
+        new (winston.transports.DailyRotateFile)({
+            dirname: config.get('logger:dirname'),
+            filename: config.get('logger:filename'),
+            datePattern: 'YYYY-MM-DD',
+            format: winston.format.combine(
+                winston.format.uncolorize(),
+                winston.format.splat(),
+                winston.format.timestamp({
+                    format: 'YYYY-MM-DDTHH:mm:ss.SSSZZ'
+                }),
+                winston.format.printf(formatMsg)
+            ),
+            handleExceptions: true
         })
     ],
     exitOnError: false
 });
 
 logger.stream = {
-    write: function(message, encoding) {
+    write: function(message) {
         logger.info(message.slice(0, -1));
     }
 };

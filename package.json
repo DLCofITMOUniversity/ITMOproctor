@@ -60,7 +60,8 @@
     "socket.io": "^2.2.0",
     "socks5-https-client": "^1.2.1",
     "urlify": "^0.3.6",
-    "winston": "^2.4.4"
+    "winston": "^3.2.1",
+    "winston-daily-rotate-file": "^4.4.1"
   },
   "engines": {
     "node": ">=8.0.0"

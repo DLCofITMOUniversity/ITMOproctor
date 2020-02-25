@@ -1,7 +1,8 @@
 {
     "logger": {
         "level": "debug",
-        "file": "./output.log"
+        "dirname": "logs",
+        "filename": "output-%DATE%.log"
     },
     "cookie": {
         "secret": "its-a-secret",
