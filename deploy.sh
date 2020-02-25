@@ -8,7 +8,7 @@ sudo apt-get update
 sudo apt-get install -y mongodb-org
 
 # Installing Node.js
-curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
 sudo apt-get install -y nodejs
 
 # Installing  Kurento Media Server
