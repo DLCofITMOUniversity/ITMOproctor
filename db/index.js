@@ -8,7 +8,6 @@ mongoose.connect(config.get('mongoose:uri'), {
     useUnifiedTopology: true
 });
 var conn = mongoose.connection;
-var Grid = require('gridfs-stream');
 var moment = require('moment');
 var fs = require('fs');
 var path = require('path');
@@ -231,28 +230,26 @@ var db = {
                 var fullname = path.join('uploads', path.basename(file.uploadname));
                 fs.exists(fullname, function(exists) {
                     if (!exists) return;
-                    var writestream = db.gfs.createWriteStream({
-                        _id: file.fileId,
-                        filename: file.filename
-                    });
-                    fs.createReadStream(fullname).pipe(writestream);
-                    writestream.on('close', function(data) {
+                    var uploadStream = db.gfs.openUploadStreamWithId(file.fileId, file.filename);
+                    fs.createReadStream(fullname).pipe(uploadStream);
+                    uploadStream.on('close', function(data) {
                         if (callback) callback(data);
-                        fs.unlink(fullname);
+                        fs.unlink(fullname, function(err) {
+                            if (err) logger.warn(err);
+                        });
                     });
                 });
             });
         },
         download: {
             user: function(args,callback) {
-                db.gfs.findOne({
-                    _id: args.fileId
-                }, function(err, data) {
+                var fileObjectId = mongoose.Types.ObjectId(args.fileId);
+                db.gfs.find({
+                    _id: fileObjectId
+                }).next(function(err, data) {
                     if (!err && data) {
-                        var readstream = db.gfs.createReadStream({
-                            _id: args.fileId
-                        });
-                        readstream.pipe(callback(data));
+                        var downloadStream = db.gfs.openDownloadStream(fileObjectId);
+                        downloadStream.pipe(callback(data));
                     }
                     else callback();
                 });              
@@ -280,14 +277,13 @@ var db = {
                             if (err) callback();
                             data.forEach(function(e,i,a){ allowed.push(e._id.toString()); });
                             if (allowed.indexOf(args.sessionUserId) >= 0) {
-                                db.gfs.findOne({
-                                    _id: args.fileId
-                                }, function(err, data) {
+                                var fileObjectId = mongoose.Types.ObjectId(args.fileId);
+                                db.gfs.find({
+                                    _id: fileObjectId
+                                }).next(function(err, data) {
                                     if (!err && data) {
-                                        var readstream = db.gfs.createReadStream({
-                                            _id: args.fileId
-                                        });
-                                        readstream.pipe(callback(data));
+                                        var downloadStream = db.gfs.openDownloadStream(fileObjectId);
+                                        downloadStream.pipe(callback(data));
                                     }
                                     else callback();
                                 });
@@ -318,14 +314,13 @@ var db = {
                             if (err) callback();
                             data.forEach(function(e,i,a){ allowed.push(e._id.toString()); });
                             if (allowed.indexOf(args.sessionUserId) >= 0) {
-                                db.gfs.findOne({
-                                    _id: args.fileId
-                                }, function(err, data) {
+                                var fileObjectId = mongoose.Types.ObjectId(args.fileId);
+                                db.gfs.find({
+                                    _id: fileObjectId
+                                }).next(function(err, data) {
                                     if (!err && data) {
-                                        var readstream = db.gfs.createReadStream({
-                                            _id: args.fileId
-                                        });
-                                        readstream.pipe(callback(data));
+                                        var downloadStream = db.gfs.openDownloadStream(fileObjectId);
+                                        downloadStream.pipe(callback(data));
                                     }
                                     else callback();
                                 });
@@ -344,14 +339,13 @@ var db = {
                     if (err) callback();
                     data.forEach(function(e,i,a){ allowed.push(e._id.toString()); });
                     if (allowed.indexOf(args.sessionUserId) >= 0) {
-                        db.gfs.findOne({
-                            _id: args.fileId
-                        }, function(err, data) {
+                        var fileObjectId = mongoose.Types.ObjectId(args.fileId);
+                        db.gfs.find({
+                            _id: fileObjectId
+                        }).next(function(err, data) {
                             if (!err && data) {
-                                var readstream = db.gfs.createReadStream({
-                                    _id: args.fileId
-                                });
-                                readstream.pipe(callback(data));
+                                var downloadStream = db.gfs.openDownloadStream(fileObjectId);
+                                downloadStream.pipe(callback(data));
                             }
                             else callback();
                         });
@@ -364,9 +358,8 @@ var db = {
             if (!files) return;
             if (!callback) callback = function() {};
             files.forEach(function(file, i, arr) {
-                db.gfs.remove({
-                    _id: file.fileId
-                }, callback);
+                var fileObjectId = mongoose.Types.ObjectId(file.fileId);
+                db.gfs.delete(fileObjectId, callback);
             });
         },
         update: function(files) {
@@ -1664,7 +1657,7 @@ conn.on('error', function(err) {
 });
 conn.once('open', function() {
     logger.info("MongoDb is connected");
-    db.gfs = Grid(conn.db, mongoose.mongo);
+    db.gfs = new mongoose.mongo.GridFSBucket(conn.db);
 });
 db.mongoose = mongoose;
 module.exports = db;

@@ -41,7 +41,6 @@
     "express": "^4.17.1",
     "express-session": "^1.16.2",
     "geoip-lite": "^1.3.8",
-    "gridfs-stream": "git+https://github.com/HolgerFrank/gridfs-stream.git",
     "kurento-client": "^6.11.0",
     "moment": "^2.24.0",
     "mongoose": "^5.7.0",
