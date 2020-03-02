@@ -136,7 +136,7 @@ var db = {
             var props = ["lastname", "firstname","middlename","provider","username","email"];
             // Query            
             var User = require('./models/user');
-            User.count(query, function(err, count) {
+            User.countDocuments(query, function(err, count) {
                 if (err || !count) return callback(err);
                 User.find(query).sort('lastname firstname middlename').exec(function(err, data) {
                         //callback(err, data, count);
@@ -480,7 +480,7 @@ var db = {
             var props = ["student", "inspector","duration","subject","examId","examCode","courseCode","sessionCode","assignment"];
             // Query
             var Exam = require('./models/exam');
-            Exam.count(query, function(err, count) {
+            Exam.countDocuments(query, function(err, count) {
                 if (err || !count) return callback(err);
                 Exam.find(query).sort('leftDate beginDate subject').populate(opts).exec(function(err, data) {
                     //callback(err, data, count);
@@ -600,7 +600,7 @@ var db = {
                     if (err || !data) return callback(err);
                     var amount = data.inspectors.length;
                     if (!amount) return callback();
-                    Exam.update({
+                    Exam.updateOne({
                         _id: args.examId
                     }, {
                         '$set': {
@@ -846,7 +846,7 @@ var db = {
             var query = {};
             // Query
             var User = require('./models/user');
-            User.count(query, function(err, count) {
+            User.countDocuments(query, function(err, count) {
                 if (err || !count) return callback(err, 0, 0, 0);
                 User.find(query).exec(function(err, data) {
                     var users = data;
@@ -914,7 +914,7 @@ var db = {
             var props = ["subject"];
             // Query
             var Exam = require('./models/exam');
-            Exam.count(query, function(err, count) {
+            Exam.countDocuments(query, function(err, count) {
                 if (err || !count) return callback(err, 0, 0, 0);
                 Exam.find(query).exec(function(err, data) {
                     var exams = data;
@@ -1202,7 +1202,7 @@ var db = {
             verify.save(function(err, data) {
                 callback(err, data);
                 var Exam = require('./models/exam');
-                Exam.update({
+                Exam.updateOne({
                     _id: args.data.examId
                 }, {
                     '$set': {
@@ -1283,7 +1283,7 @@ var db = {
             var props = ["inspector"];
             // Query
             var Schedule = require('./models/schedule');
-            Schedule.count(query, function(err, count) {
+            Schedule.countDocuments(query, function(err, count) {
                 if (err || !count) return callback(err);
                 Schedule.find(query).sort('beginDate').populate(opts).exec(function(err, data) {
                         //callback(err, data, count);
@@ -1417,7 +1417,7 @@ var db = {
         },
         update: function(args, callback) {
             var Note = require('./models/note');
-            Note.update({
+            Note.updateOne({
                 _id: args.noteId,
                 exam: args.examId,
                 author: args.userId,
