@@ -76,15 +76,15 @@
                 default: return 'не поддерживается';
             }
         }};
-    $.getJSON("/dist/metadata.json", function(data) {
+    $.getJSON("metadata.json", function(data) {
         if (data) {
             $osVersion.html(platform.toString());
             $appVersion.html(data.version + " (" + moment(data.date).format('YYYY.MM.DD HH:mm:ss') + ")");
             $appDist.html('');
             for (var k in data.md5) {
-                $appDist.append('<li><a href="/dist/' + k + '" title="md5: ' + data.md5[k] + '">' + k + '</a></li>');
+                $appDist.append('<li><a href="' + k + '" title="md5: ' + data.md5[k] + '">' + k + '</a></li>');
                 if (k.indexOf(platform.os) != -1 && k.indexOf(platform.arch) != -1) {
-                    $appLink.html('<a href="/dist/' + k + '" title="md5: ' + data.md5[k] + '">' + k + '</a>');
+                    $appLink.html('<a href="' + k + '" title="md5: ' + data.md5[k] + '">' + k + '</a>');
                     $download.show();
                 }
             }

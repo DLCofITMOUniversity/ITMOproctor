@@ -100,9 +100,9 @@ define([
             }
         },
         generateBuffer: function() {
-            // Generate 1 MB buffer
+            // Generate 8 MB buffer
             var buffer = 'x';
-            for (var i = 0; i < 20; i++) {
+            for (var i = 0; i < 23; i++) {
                 buffer += buffer;
             }
             return buffer;
@@ -145,10 +145,10 @@ define([
                         url: 'tools/ping',
                         cache: false,
                         beforeSend: function() {
-                            timestamp = Date.now();
+                            timestamp = performance.now();
                         }
                     }).done(function() {
-                        var diff = Date.now() - timestamp;
+                        var diff = performance.now() - timestamp;
                         report.ping = parseInt(diff, 10);
                         report.render();
                         if (callback) callback();
@@ -160,12 +160,12 @@ define([
                         type: 'post',
                         url: 'tools/rx',
                         beforeSend: function(xhr) {
-                            timestamp = Date.now();
+                            timestamp = performance.now();
                         }
                     }).done(function() {
-                        var diff = Date.now() - timestamp - report.ping;
+                        var diff = performance.now() - timestamp - report.ping;
                         if (diff > 0) {
-                            var mbps = 1000 * 8 / diff;
+                            var mbps = 8 * 1000 * 8 / diff;
                             report.rx = mbps.toFixed(2);
                             report.render();
                         }
@@ -181,12 +181,12 @@ define([
                         processData: false,
                         beforeSend: function(xhr) {
                             xhr.setRequestHeader('Content-Type', 'application/octet-stream');
-                            timestamp = Date.now();
+                            timestamp = performance.now();
                         }
                     }).done(function() {
-                        var diff = Date.now() - timestamp - report.ping;
+                        var diff = performance.now() - timestamp - report.ping;
                         if (diff > 0) {
-                            var mbps = 1000 * 8 / diff;
+                            var mbps = 8 * 1000 * 8 / diff;
                             report.tx = mbps.toFixed(2);
                             report.render();
                         }

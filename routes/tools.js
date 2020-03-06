@@ -2,9 +2,9 @@ var express = require('express');
 var router = express.Router();
 var geoip = require('geoip-lite');
 
-// Generate 1 MB buffer
+// Generate 8 MB buffer
 var buffer = 'x';
-for (var i = 0; i < 20; i++) {
+for (var i = 0; i < 23; i++) {
     buffer += buffer;
 }
 
