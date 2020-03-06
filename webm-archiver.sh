@@ -11,14 +11,25 @@
 # exam_id - идентификатор экзамена
 # user_id - идентификатор пользователя
 
-STORAGE_URL="http://localhost/webdav/"
+STORAGE_DOMAIN="localhost"
+STORAGE_URL="http://${STORAGE_DOMAIN}/webdav/"
 STORAGE_USER="proctor"
 STORAGE_PASS="proctor"
 
 STORAGE_DIR="/storage"
 FRAME_RATE="5"
+OUTPUT_DIR="${STORAGE_DIR%/}/tmp"
 LOG_FILE="${STORAGE_DIR%/}/output.log"
 NCPU=$(grep -c ^processor /proc/cpuinfo)
+
+# проверка подключения к webdav (для ARP Proxy)
+check_webdav_connection()
+{
+    if [ ${STORAGE_DOMAIN} != "localhost" ]
+    then
+        ping -c 5 ${STORAGE_DOMAIN}
+    fi
+}
 
 # определение разрешения видео на основе идентификатора камеры в имени файла
 get_video_resolution()
@@ -42,7 +53,7 @@ write_log()
 # команда вызова ffmpeg
 ffmpeg_exec()
 {
-    ffmpeg -y -threads ${NCPU} "$@" </dev/null >/dev/null
+    ffmpeg -y -hide_banner -threads ${NCPU} "$@" </dev/null >/dev/null
 }
 
 # определение продолжительности видеофайла в миллисекундах
@@ -59,7 +70,7 @@ scale_video_file()
     local out_file="$2"
     local width="$3"
     local height="$4"
-    ffmpeg_exec -i "$in_file" -c:v vp8 -r:v ${FRAME_RATE} -filter:v scale="'if(gte(a,4/3),${width},-1)':'if(gt(a,4/3),-1,${height})'",pad="${width}:${height}:(${width}-iw)/2:(${height}-ih)/2" -c:a libvorbis -q:a 0 "${out_file}"
+    ffmpeg_exec -i "$in_file" -c:v vp8 -cpu-used 3 -r:v ${FRAME_RATE} -filter:v scale="'if(gte(a,4/3),${width},-1)':'if(gt(a,4/3),-1,${height})'",pad="${width}:${height}:(${width}-iw)/2:(${height}-ih)/2" -c:a libopus -b:a 96k "${out_file}"
 }
 
 # создания файла-загрушки для заполнения пропусков между видеофайлами
@@ -70,14 +81,14 @@ write_blank_file()
     local duration=$(echo $2 | LC_NUMERIC="C" awk '{printf("%.3f", $1 / 1000)}')
     local width="$3"
     local height="$4"
-    ffmpeg_exec -f lavfi -i "color=c=black:s=${width}x${height}:d=${duration}" -c:v vp8 -r:v ${FRAME_RATE} -f lavfi -i "aevalsrc=0|0:d=${duration}:s=48k" -c:a libvorbis -q:a 0 "${out_file}"
+    ffmpeg_exec -f lavfi -i "color=c=black:s=${width}x${height}:d=${duration}" -f lavfi -i "aevalsrc=0|0:d=${duration}:s=48k" -c:v vp8 -cpu-used 3 -r:v ${FRAME_RATE} -c:a libopus "${out_file}"
 }
 
 # объединение файлов одной видеогруппы
 concat_video_group()
 {
     local video_group="$1"
-    ffmpeg_exec -f concat -i <(ls "${OUTPUT_DIR}" | grep -oe "^[0-9]\+_${video_group}$" | sort -n | xargs -I FILE echo "file ${OUTPUT_DIR%/}/FILE") -c copy "${OUTPUT_DIR}/${video_group}"
+    ffmpeg_exec -f concat -safe 0 -i <(ls "${OUTPUT_DIR}" | grep -oe "^[0-9]\+_${video_group}$" | sort -n | xargs -I FILE echo "file ${OUTPUT_DIR%/}/FILE") -c copy "${OUTPUT_DIR}/${video_group}"
     ls "${OUTPUT_DIR}" | grep -oe "^[0-9]\+_${video_group}$" | xargs -I FILE rm "${OUTPUT_DIR%/}/FILE"
 }
 
@@ -92,7 +103,7 @@ encode_video_complex()
         -i "${OUTPUT_DIR%/}/${camera1}" \
         -i "${OUTPUT_DIR%/}/${camera2}" \
         -i "${OUTPUT_DIR%/}/${camera3}" \
-        -threads ${NCPU} -c:v vp8 -r:v ${FRAME_RATE} -c:a libvorbis -q:a 0 \
+        -threads ${NCPU} -c:v vp8 -cpu-used 3 -r:v ${FRAME_RATE} -c:a libopus -b:a 96k \
         -filter_complex "
             pad=1088:480 [base];
             [0:v] setpts=PTS-STARTPTS, scale=320:240 [camera1];
@@ -292,6 +303,8 @@ archiver()
         then
             # запустить перекодирование видеофайлов сессии
             encode_video_session "${video_file}"
+            # проверить подключение к webdav (для ARP Proxy)
+            check_webdav_connection
             # загрузить или обновить файл на сервере
             upload "${video_file}"
         else
@@ -308,5 +321,11 @@ archiver()
     done
 }
 
+# проверить подключение к webdav (для ARP Proxy)
+check_webdav_connection
+
 # получение списка сессий и запуск архивирования
 ls "${STORAGE_DIR}" | grep -e "^[0-9]\+_[a-z0-9]\+-[0-9a-f]\{24\}-[0-9a-f]\{24\}\.webm$" | cut -f2 -d- | sort -u | archiver
+
+# удалить видеофайлы старше 10 дней
+find "${STORAGE_DIR%/}"/*.webm -mtime +10 -exec rm {} \;

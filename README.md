@@ -52,52 +52,68 @@
 * [Структурная схема системы](https://drive.google.com/file/d/0B7YdZbqVWxzeSlFWZUl4S1RiaVE/view?usp=sharing)
 * [Диаграмма взаимодействия компонентов системы](https://drive.google.com/file/d/0B7YdZbqVWxzeRVVBanVFWlVNQ2M/view?usp=sharing)
 
-#### Развертывание системы на Ubuntu 14.04
+### Развертывание системы
 
-Установить MongoDB:
+Далее предложены варианты развертывания системы на ОС Ubuntu 18.04.3
+
+#### Развертывание с помощью bash-скрипта
 ```
-sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
-echo "deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-3.4.list
+chmod +x ./deploy.sh
+./deploy.sh
+```
+
+#### Ручное развертывание
+
+Установка дополнительных пакетов:
+```
 sudo apt-get update
-sudo apt-get install -y mongodb-org
+sudo apt-get install -y software-properties-common gnupg curl git
+sudo apt-get install -y tar zip unzip wget upx-ucl
 ```
 
-Установить Node.js:
+Установка MongoDB 3.6:
+```
+sudo apt-get update
+sudo apt-get install -y mongodb
+```
+
+Установка Node.js 12:
 ```
 curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
 sudo apt-get install -y nodejs
 ```
 
-Установить Kurento Media Server:
+Установка Kurento Media Server 6.13:
 ```
-echo "deb http://ubuntu.kurento.org trusty kms6" | sudo tee /etc/apt/sources.list.d/kurento.list
-wget http://ubuntu.kurento.org/kurento.gpg.key -O - | sudo apt-key add -
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 5AFA7A83
+echo "deb http://ubuntu.openvidu.io/6.13.0 bionic kms6" | sudo tee /etc/apt/sources.list.d/kurento.list
 sudo apt-get update
-sudo apt-get install kurento-media-server-6.0
+sudo apt-get install -y kurento-media-server
+```
+
+Автозагрузка и запуск MongoDB:
+```
+sudo systemctl enable mongodb
+sudo systemctl start mongodb
+```
+
+Автозагрузка и запуск Kurento Media Server:
+```
+sudo systemctl enable kurento-media-server
+sudo service kurento-media-server start
 ```
 
 Клонирование репозитория ITMOproctor и инициализация:
 ```
 git clone https://github.com/openeduITMO/ITMOproctor.git
 cd ./ITMOproctor
-mv config-example.json config.json
+cp config-example.json config.json
 npm install
-```
-
-Запуск сервера, по умолчанию сервер доступен по адресу [localhost:3000](http://localhost:3000):
-```
-npm start
-```
-
-Запуск Kurento Media Server:
-```
-sudo service kurento-media-server-6.0 start
 ```
 
 Сборка приложения под все архитектуры, архивы для загрузки приложения будут размещены в public/dist:
 ```
-apt-get install tar zip unzip wget upx-ucl
-npm run-script build-app
+npm run build-app
 ```
 
 Добавление пользователей:
@@ -106,8 +122,13 @@ cd ./ITMOproctor/db
 node import.js users.json
 ```
 
-Развертывание системы на Ubuntu 14.04 с помощью bash-скрипта:
+Запуск сервера, по умолчанию сервер доступен по адресу [localhost:3000](http://localhost:3000):
 ```
-chmod +x ./deploy.sh
-./deploy.sh
+npm start
 ```
+
+### Настройка параметров системы
+
+Файл с параметрами сервера: `config.json`
+
+Файл с параметрами приложения: `app-nw/package.json`
